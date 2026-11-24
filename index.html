@@ -100,6 +100,102 @@ body {
     animation-delay: 7s;
 }
 
+.bubble:nth-child(7) {
+    width: 16px;
+    height: 16px;
+    left: 15%;
+    animation-duration: 11s;
+    animation-delay: 2s;
+}
+
+.bubble:nth-child(8) {
+    width: 35px;
+    height: 35px;
+    left: 30%;
+    animation-duration: 19s;
+    animation-delay: 5s;
+}
+
+.bubble:nth-child(9) {
+    width: 10px;
+    height: 10px;
+    left: 45%;
+    animation-duration: 12s;
+    animation-delay: 1s;
+}
+
+.bubble:nth-child(10) {
+    width: 23px;
+    height: 23px;
+    left: 60%;
+    animation-duration: 16s;
+    animation-delay: 4s;
+}
+
+.bubble:nth-child(11) {
+    width: 14px;
+    height: 14px;
+    left: 80%;
+    animation-duration: 13s;
+    animation-delay: 6s;
+}
+
+.bubble:nth-child(12) {
+    width: 30px;
+    height: 30px;
+    left: 95%;
+    animation-duration: 18s;
+    animation-delay: 3s;
+}
+
+.bubble:nth-child(13) {
+    width: 12px;
+    height: 12px;
+    left: 5%;
+    animation-duration: 15s;
+    animation-delay: 8s;
+}
+
+.bubble:nth-child(14) {
+    width: 20px;
+    height: 20px;
+    left: 38%;
+    animation-duration: 14s;
+    animation-delay: 9s;
+}
+
+.bubble:nth-child(15) {
+    width: 28px;
+    height: 28px;
+    left: 68%;
+    animation-duration: 20s;
+    animation-delay: 7s;
+}
+
+.bubble:nth-child(16) {
+    width: 9px;
+    height: 9px;
+    left: 53%;
+    animation-duration: 12s;
+    animation-delay: 6s;
+}
+
+.bubble:nth-child(17) {
+    width: 18px;
+    height: 18px;
+    left: 90%;
+    animation-duration: 17s;
+    animation-delay: 10s;
+}
+
+.bubble:nth-child(18) {
+    width: 25px;
+    height: 25px;
+    left: 25%;
+    animation-duration: 16s;
+    animation-delay: 11s;
+}
+
 @keyframes rise {
     0% {
         transform: translateY(0) translateX(0);
@@ -323,6 +419,18 @@ button:disabled {
     <span class="bubble"></span>
     <span class="bubble"></span>
     <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
 </div>
 
 <div class="waves" aria-hidden="true"></div>
@@ -330,23 +438,85 @@ button:disabled {
 <div class="container">
 
     <div class="car-icon">
-        <svg viewBox="0 0 100 100" fill="none"
-             xmlns="http://www.w3.org/2000/svg">
-            <path d="M17 57L24 37C26 31 31 27 38 27H66C72 27 77 31 80 37L87 57"
-                  stroke="#17618F" stroke-width="5"
-                  stroke-linecap="round"/>
-            <path d="M12 58H92V73C92 77 89 80 85 80H19C15 80 12 77 12 73V58Z"
-                  fill="#D5F0FF" stroke="#17618F"
-                  stroke-width="4"/>
-            <path d="M29 39H72L78 56H23L29 39Z"
-                  fill="#9BD7F4" stroke="#17618F"
-                  stroke-width="3"/>
-            <circle cx="29" cy="75" r="8" fill="#174B72"/>
-            <circle cx="75" cy="75" r="8" fill="#174B72"/>
-            <path d="M53 8C53 8 43 20 43 27C43 33 47 37 53 37C59 37 63 33 63 27C63 20 53 8 53 8Z"
-                  fill="#57B7E6" stroke="#17618F"
-                  stroke-width="2"/>
-        </svg>
+        <svg viewBox="0 0 120 100" fill="none"
+     xmlns="http://www.w3.org/2000/svg">
+
+    <!-- Wasserreflex -->
+    <path d="M12 85 Q60 95 108 85"
+          stroke="#80C9EB" stroke-width="2"
+          stroke-linecap="round"/>
+
+    <!-- Karosserie -->
+    <path d="M12 62 L20 45
+             C23 39 29 36 37 35
+             L48 21
+             C52 16 57 14 64 14
+             H79
+             C86 14 91 19 95 26
+             L105 45
+             L112 54
+             V72
+             C112 77 108 80 103 80
+             H17
+             C12 80 8 76 8 71
+             V65 Z"
+          fill="#D8F1FF"
+          stroke="#174B72"
+          stroke-width="3"
+          stroke-linejoin="round"/>
+
+    <!-- Scheiben -->
+    <path d="M29 43 L49 23
+             H78
+             C84 23 87 27 90 33
+             L96 43 Z"
+          fill="#83C8EA"
+          stroke="#174B72"
+          stroke-width="2.5"/>
+
+    <!-- Mittelstrebe -->
+    <path d="M61 23 V43"
+          stroke="#174B72" stroke-width="2"/>
+
+    <!-- Kühlergrill -->
+    <path d="M48 59 H73"
+          stroke="#174B72" stroke-width="3"
+          stroke-linecap="round"/>
+
+    <path d="M52 65 H69"
+          stroke="#65A9D0" stroke-width="2"
+          stroke-linecap="round"/>
+
+    <!-- LED-Scheinwerfer -->
+    <path d="M12 54 L30 50"
+          stroke="#FFFFFF" stroke-width="5"
+          stroke-linecap="round"/>
+
+    <path d="M91 50 L109 54"
+          stroke="#FFFFFF" stroke-width="5"
+          stroke-linecap="round"/>
+
+    <!-- Räder -->
+    <circle cx="31" cy="76" r="10"
+            fill="#174B72"/>
+    <circle cx="31" cy="76" r="4"
+            fill="#D8F1FF"/>
+
+    <circle cx="89" cy="76" r="10"
+            fill="#174B72"/>
+    <circle cx="89" cy="76" r="4"
+            fill="#D8F1FF"/>
+
+    <!-- Wassertropfen -->
+    <path d="M105 9 C105 9 98 18 98 23
+             C98 28 101 31 105 31
+             C109 31 112 28 112 23
+             C112 18 105 9 105 9Z"
+          fill="#55BCEB"
+          stroke="#17618F"
+          stroke-width="1.5"/>
+
+</svg>
     </div>
 
     <div class="logo">MT ROYAL WASH</div>
