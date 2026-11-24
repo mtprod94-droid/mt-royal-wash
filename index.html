@@ -3,11 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080808">
+<meta name="theme-color" content="#eaf6ff">
 
 <title>MT ROYAL WASH | BY MAISON TRAORÉ</title>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -16,99 +18,271 @@
 
 body {
     min-height: 100vh;
-    background:
-        radial-gradient(ellipse at top, #29200e 0%, #080808 55%);
-    color: #fff;
-    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+    position: relative;
     display: flex;
-    align-items: center;
     justify-content: center;
-    padding: 20px;
+    align-items: center;
+    padding: 35px 20px;
+    font-family: 'DM Sans', sans-serif;
+    color: #12304b;
+    background:
+        radial-gradient(circle at 20% 15%, #ffffff 0%, transparent 35%),
+        linear-gradient(145deg, #eaf7ff, #c8e8fa 55%, #f8fcff);
 }
+
+/* ANIMATED WATER BACKGROUND */
+
+.water {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.bubble {
+    position: absolute;
+    bottom: -100px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.85);
+    background: radial-gradient(circle at 30% 25%,
+        rgba(255,255,255,.95),
+        rgba(120,200,245,.13) 65%);
+    box-shadow: inset -3px -4px 10px rgba(75,165,220,.12);
+    animation: rise linear infinite;
+}
+
+.bubble:nth-child(1) {
+    width: 24px;
+    height: 24px;
+    left: 8%;
+    animation-duration: 13s;
+}
+
+.bubble:nth-child(2) {
+    width: 13px;
+    height: 13px;
+    left: 23%;
+    animation-duration: 17s;
+    animation-delay: 3s;
+}
+
+.bubble:nth-child(3) {
+    width: 32px;
+    height: 32px;
+    left: 72%;
+    animation-duration: 15s;
+    animation-delay: 2s;
+}
+
+.bubble:nth-child(4) {
+    width: 18px;
+    height: 18px;
+    left: 88%;
+    animation-duration: 12s;
+    animation-delay: 5s;
+}
+
+.bubble:nth-child(5) {
+    width: 11px;
+    height: 11px;
+    left: 52%;
+    animation-duration: 18s;
+    animation-delay: 1s;
+}
+
+.bubble:nth-child(6) {
+    width: 27px;
+    height: 27px;
+    left: 40%;
+    animation-duration: 16s;
+    animation-delay: 7s;
+}
+
+@keyframes rise {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+    15% {
+        opacity: .8;
+    }
+    85% {
+        opacity: .7;
+    }
+    100% {
+        transform: translateY(-115vh) translateX(35px);
+        opacity: 0;
+    }
+}
+
+/* WATER WAVES */
+
+.waves {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 200%;
+    height: 110px;
+    pointer-events: none;
+    opacity: .35;
+    background:
+        radial-gradient(ellipse at 50% 100%,
+        #68bde8 0%, #a9ddf5 55%, transparent 70%);
+    animation: waveMove 9s ease-in-out infinite alternate;
+}
+
+@keyframes waveMove {
+    from { transform: translateX(-10%) translateY(12px); }
+    to { transform: translateX(-30%) translateY(-8px); }
+}
+
+/* MAIN CONTENT */
 
 .container {
     width: 100%;
     max-width: 430px;
+    position: relative;
+    z-index: 2;
     text-align: center;
 }
 
-.logo {
-    font-size: 42px;
-    font-weight: 900;
-    letter-spacing: 4px;
-    color: #d6b46a;
-    text-shadow: 0 0 25px #b18a3b55;
+/* CAR SYMBOL */
+
+.car-icon {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,.75);
+    border: 1px solid rgba(88,170,220,.25);
+    box-shadow: 0 10px 35px rgba(44,120,170,.12);
+    animation: float 4s ease-in-out infinite;
 }
 
-.crown {
-    font-size: 38px;
-    margin-bottom: 12px;
+.car-icon svg {
+    width: 57px;
+    height: 57px;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-7px); }
+}
+
+/* BRAND */
+
+.logo {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(27px, 8vw, 36px);
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #123c61;
 }
 
 .brand {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #5487aa;
+    margin-top: 9px;
+    font-weight: 600;
+}
+
+.tagline {
     font-size: 12px;
-    letter-spacing: 5px;
-    color: #c9a96e;
-    margin-top: 12px;
+    color: #63849d;
+    margin-top: 16px;
+    letter-spacing: .4px;
 }
 
 .line {
-    width: 65px;
+    width: 55px;
     height: 2px;
-    background: #c9a96e;
-    margin: 30px auto;
+    background: linear-gradient(90deg, #65bde8, #17618f);
+    margin: 27px auto;
+    border-radius: 5px;
 }
 
+/* LOGIN CARD */
+
 .card {
-    background: rgba(255,255,255,0.035);
-    border: 1px solid rgba(201,169,110,0.35);
-    border-radius: 18px;
-    padding: 32px 24px;
-    box-shadow: 0 15px 50px #000;
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(255,255,255,.95);
+    border-radius: 22px;
+    padding: 34px 25px;
+    box-shadow:
+        0 20px 55px rgba(40,100,140,.13),
+        inset 0 1px 0 #fff;
+    backdrop-filter: blur(12px);
 }
 
 h2 {
-    color: #d6b46a;
-    font-size: 23px;
-    margin-bottom: 10px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 24px;
+    color: #174b72;
+    margin-bottom: 11px;
 }
 
 .subtitle {
-    color: #999;
     font-size: 13px;
-    margin-bottom: 28px;
+    color: #7994a9;
+    margin-bottom: 27px;
+    line-height: 1.6;
 }
+
+/* INPUTS */
 
 input {
     width: 100%;
     padding: 16px;
-    margin-bottom: 16px;
-    border-radius: 9px;
-    border: 1px solid #444;
-    background: #111;
-    color: white;
+    margin-bottom: 15px;
+    border-radius: 11px;
+    border: 1px solid #d6e8f3;
+    background: rgba(255,255,255,.95);
+    color: #173d59;
+    font-family: inherit;
     font-size: 15px;
     outline: none;
+    transition: .3s;
 }
 
 input:focus {
-    border-color: #c9a96e;
+    border-color: #55a9d8;
+    box-shadow: 0 0 0 3px rgba(85,169,216,.12);
 }
+
+input::placeholder {
+    color: #a2b8c8;
+}
+
+/* BUTTON */
 
 button {
     width: 100%;
     padding: 16px;
     border: none;
-    border-radius: 9px;
-    background: linear-gradient(135deg, #f0d28d, #a77b30);
-    color: #080808;
-    font-weight: bold;
-    font-size: 15px;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #287eae, #124c76);
+    color: white;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
     cursor: pointer;
+    box-shadow: 0 8px 20px rgba(26,91,135,.2);
+    transition: .3s;
+}
+
+button:active {
+    transform: scale(.98);
 }
 
 button:disabled {
-    opacity: 0.6;
+    opacity: .6;
     cursor: wait;
 }
 
@@ -116,31 +290,72 @@ button:disabled {
     min-height: 22px;
     margin-top: 17px;
     font-size: 13px;
-    color: #e6c77f;
+    color: #c04b4b;
 }
 
 .footer {
-    margin-top: 30px;
-    color: #777;
-    font-size: 11px;
-    letter-spacing: 2px;
+    margin-top: 27px;
+    color: #7292a9;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    line-height: 1.8;
 }
 
 .hidden {
     display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+    }
 }
 </style>
 </head>
 
 <body>
 
+<div class="water" aria-hidden="true">
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+</div>
+
+<div class="waves" aria-hidden="true"></div>
+
 <div class="container">
 
-    <div class="crown">♛</div>
+    <div class="car-icon">
+        <svg viewBox="0 0 100 100" fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 57L24 37C26 31 31 27 38 27H66C72 27 77 31 80 37L87 57"
+                  stroke="#17618F" stroke-width="5"
+                  stroke-linecap="round"/>
+            <path d="M12 58H92V73C92 77 89 80 85 80H19C15 80 12 77 12 73V58Z"
+                  fill="#D5F0FF" stroke="#17618F"
+                  stroke-width="4"/>
+            <path d="M29 39H72L78 56H23L29 39Z"
+                  fill="#9BD7F4" stroke="#17618F"
+                  stroke-width="3"/>
+            <circle cx="29" cy="75" r="8" fill="#174B72"/>
+            <circle cx="75" cy="75" r="8" fill="#174B72"/>
+            <path d="M53 8C53 8 43 20 43 27C43 33 47 37 53 37C59 37 63 33 63 27C63 20 53 8 53 8Z"
+                  fill="#57B7E6" stroke="#17618F"
+                  stroke-width="2"/>
+        </svg>
+    </div>
 
     <div class="logo">MT ROYAL WASH</div>
 
     <div class="brand">BY MAISON TRAORÉ</div>
+
+    <div class="tagline">
+        Votre véhicule mérite le meilleur.
+    </div>
 
     <div class="line"></div>
 
@@ -200,7 +415,7 @@ button:disabled {
 
     <div class="footer">
         VOTRE VÉHICULE MÉRITE LE MEILLEUR.
-        <br><br>
+        <br>
         © 2026 MT ROYAL WASH
     </div>
 
