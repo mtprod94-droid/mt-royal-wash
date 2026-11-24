@@ -957,27 +957,34 @@ button:disabled {
 
         <form id="loginForm">
 
-            <input
-                type="text"
-                id="username"
-                placeholder="Nom d'utilisateur"
-                autocomplete="username"
-                required
-            >
+    <select
+        id="username"
+        autocomplete="username"
+        required
+    >
+        <option value="" disabled selected>
+            Choisir un utilisateur
+        </option>
 
-            <input
-                type="password"
-                id="password"
-                placeholder="Mot de passe"
-                autocomplete="current-password"
-                required
-            >
+        <option value="MT-ADMIN-001">
+            MT-ADMIN-001
+        </option>
 
-            <button type="submit" id="loginButton">
-                SE CONNECTER
-            </button>
+    </select>
 
-        </form>
+    <input
+        type="password"
+        id="password"
+        placeholder="Mot de passe"
+        autocomplete="current-password"
+        required
+    >
+
+    <button type="submit" id="loginButton">
+        SE CONNECTER
+    </button>
+
+</form>
 
         <div id="message" role="status"></div>
 
