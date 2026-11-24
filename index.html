@@ -1,12 +1,299 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#080808">
-    <title>MT ROYAL WASH</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+
+<title>MT ROYAL WASH | BY MAISON TRAORÉ</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(ellipse at top, #29200e 0%, #080808 55%);
+    color: #fff;
+    font-family: Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 430px;
+    text-align: center;
+}
+
+.logo {
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: #d6b46a;
+    text-shadow: 0 0 25px #b18a3b55;
+}
+
+.crown {
+    font-size: 38px;
+    margin-bottom: 12px;
+}
+
+.brand {
+    font-size: 12px;
+    letter-spacing: 5px;
+    color: #c9a96e;
+    margin-top: 12px;
+}
+
+.line {
+    width: 65px;
+    height: 2px;
+    background: #c9a96e;
+    margin: 30px auto;
+}
+
+.card {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(201,169,110,0.35);
+    border-radius: 18px;
+    padding: 32px 24px;
+    box-shadow: 0 15px 50px #000;
+}
+
+h2 {
+    color: #d6b46a;
+    font-size: 23px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #999;
+    font-size: 13px;
+    margin-bottom: 28px;
+}
+
+input {
+    width: 100%;
+    padding: 16px;
+    margin-bottom: 16px;
+    border-radius: 9px;
+    border: 1px solid #444;
+    background: #111;
+    color: white;
+    font-size: 15px;
+    outline: none;
+}
+
+input:focus {
+    border-color: #c9a96e;
+}
+
+button {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #f0d28d, #a77b30);
+    color: #080808;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+#message {
+    min-height: 22px;
+    margin-top: 17px;
+    font-size: 13px;
+    color: #e6c77f;
+}
+
+.footer {
+    margin-top: 30px;
+    color: #777;
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+.hidden {
+    display: none;
+}
+</style>
 </head>
+
 <body>
+
+<div class="container">
+
+    <div class="crown">♛</div>
+
+    <div class="logo">MT ROYAL WASH</div>
+
+    <div class="brand">BY MAISON TRAORÉ</div>
+
+    <div class="line"></div>
+
+    <div class="card" id="loginCard">
+
+        <h2>ESPACE PRIVÉ</h2>
+
+        <p class="subtitle">
+            Connectez-vous à votre espace professionnel
+        </p>
+
+        <form id="loginForm">
+
+            <input
+                type="text"
+                id="username"
+                placeholder="Nom d'utilisateur"
+                autocomplete="username"
+                required
+            >
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Mot de passe"
+                autocomplete="current-password"
+                required
+            >
+
+            <button type="submit" id="loginButton">
+                SE CONNECTER
+            </button>
+
+        </form>
+
+        <div id="message" role="status"></div>
+
+    </div>
+
+    <div class="card hidden" id="dashboard">
+
+        <h2>CONNEXION RÉUSSIE</h2>
+
+        <p class="subtitle">
+            Bienvenue dans votre espace professionnel.
+        </p>
+
+        <p id="welcomeUser"></p>
+
+        <br>
+
+        <button onclick="logout()">
+            SE DÉCONNECTER
+        </button>
+
+    </div>
+
+    <div class="footer">
+        VOTRE VÉHICULE MÉRITE LE MEILLEUR.
+        <br><br>
+        © 2026 MT ROYAL WASH
+    </div>
+
+</div>
+
+<script>
+const LOGIN_URL =
+"https://cgilxwdxiakfriroixih.supabase.co/functions/v1/username-login";
+
+const form = document.getElementById("loginForm");
+const button = document.getElementById("loginButton");
+const message = document.getElementById("message");
+
+let currentSession = null;
+
+form.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const username =
+        document.getElementById("username").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    button.disabled = true;
+    button.textContent = "CONNEXION...";
+    message.textContent = "";
+
+    try {
+
+        const response = await fetch(LOGIN_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.access_token) {
+            throw new Error(
+                data.error || "Identifiants incorrects."
+            );
+        }
+
+        currentSession = data;
+
+        document.getElementById("loginCard")
+            .classList.add("hidden");
+
+        document.getElementById("dashboard")
+            .classList.remove("hidden");
+
+        document.getElementById("welcomeUser")
+            .textContent = "Utilisateur : " + data.user.username;
+
+        document.getElementById("password").value = "";
+
+    } catch (error) {
+
+        message.textContent =
+            error.message || "Erreur de connexion.";
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "SE CONNECTER";
+
+    }
+
+});
+
+function logout() {
+
+    currentSession = null;
+
+    document.getElementById("dashboard")
+        .classList.add("hidden");
+
+    document.getElementById("loginCard")
+        .classList.remove("hidden");
+
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
+
+    message.textContent = "";
+}
+</script>
 
 </body>
 </html>
