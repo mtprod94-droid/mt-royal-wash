@@ -713,23 +713,92 @@ button:disabled {
 
     </div>
 
-    <div class="card hidden" id="dashboard">
+    <div class="dashboard hidden" id="dashboard">
 
-        <h2>CONNEXION RÉUSSIE</h2>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
 
-        <p class="subtitle">
-            Bienvenue dans votre espace professionnel.
-        </p>
+        <div class="sidebar-brand">
+            <h2>MT ROYAL WASH</h2>
+            <span>ADMINISTRATION</span>
+        </div>
 
-        <p id="welcomeUser"></p>
+        <nav class="sidebar-menu">
 
-        <br>
+            <button class="active">Tableau de bord</button>
+            <button>Enregistrer un lavage</button>
+            <button>Véhicules</button>
+            <button>Employés</button>
+            <button>Recettes</button>
+            <button>Dépenses</button>
+            <button>Historique</button>
 
-        <button onclick="logout()">
+        </nav>
+
+        <button class="logout-button" onclick="logout()">
             SE DÉCONNECTER
         </button>
 
-    </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+
+        <header class="dashboard-header">
+
+            <div>
+                <h1>Tableau de bord</h1>
+                <p>Bienvenue dans votre espace professionnel.</p>
+            </div>
+
+            <div class="admin-profile">
+                <span>ADMIN</span>
+                <p id="welcomeUser"></p>
+            </div>
+
+        </header>
+
+        <!-- STATISTICS -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <span>RECETTES DU JOUR</span>
+                <h2>0 FCFA</h2>
+            </div>
+
+            <div class="stat-card">
+                <span>LAVAGES DU JOUR</span>
+                <h2>0</h2>
+            </div>
+
+            <div class="stat-card">
+                <span>DÉPENSES DU JOUR</span>
+                <h2>0 FCFA</h2>
+            </div>
+
+            <div class="stat-card">
+                <span>BÉNÉFICE DU JOUR</span>
+                <h2>0 FCFA</h2>
+            </div>
+
+        </section>
+
+        <!-- CONTENT -->
+        <section class="dashboard-content">
+
+            <h2>Bienvenue chez MT ROYAL WASH</h2>
+
+            <p>
+                Gérez vos lavages, vos employés,
+                vos recettes et vos dépenses depuis
+                un seul espace.
+            </p>
+
+        </section>
+
+    </main>
+
+</div>
 
     <div class="footer">
         VOTRE VÉHICULE MÉRITE LE MEILLEUR.
