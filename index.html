@@ -234,6 +234,91 @@ body {
     to { transform: translateX(-30%) translateY(-8px); }
 }
 
+/* PREMIUM IRIDESCENT SOAP BUBBLES */
+
+.soap-bubble {
+    position: fixed;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.9);
+
+    background:
+        radial-gradient(circle at 28% 24%,
+            rgba(255,255,255,.95) 0 3%,
+            transparent 13%),
+        radial-gradient(circle at 72% 75%,
+            rgba(90,210,255,.24),
+            transparent 35%),
+        radial-gradient(circle at 30% 80%,
+            rgba(255,170,220,.22),
+            transparent 40%),
+        radial-gradient(circle at 65% 25%,
+            rgba(160,225,255,.30),
+            transparent 42%),
+        rgba(255,255,255,.10);
+
+    box-shadow:
+        inset 3px 3px 9px rgba(255,255,255,.9),
+        inset -4px -5px 12px rgba(100,180,230,.20),
+        0 0 12px rgba(255,255,255,.35);
+
+    animation: soapFloat 12s ease-in-out infinite;
+}
+
+.soap-bubble::after {
+    content: "";
+    position: absolute;
+    top: 18%;
+    left: 22%;
+    width: 22%;
+    height: 12%;
+    border-radius: 50%;
+    background: rgba(255,255,255,.9);
+    filter: blur(2px);
+    transform: rotate(-35deg);
+}
+
+.soap-bubble.one {
+    width: 45px;
+    height: 45px;
+    left: 7%;
+    bottom: 12%;
+}
+
+.soap-bubble.two {
+    width: 28px;
+    height: 28px;
+    right: 9%;
+    bottom: 22%;
+    animation-delay: 3s;
+}
+
+.soap-bubble.three {
+    width: 58px;
+    height: 58px;
+    right: 17%;
+    bottom: 8%;
+    animation-delay: 5s;
+}
+
+.soap-bubble.four {
+    width: 35px;
+    height: 35px;
+    left: 22%;
+    bottom: 30%;
+    animation-delay: 2s;
+}
+
+@keyframes soapFloat {
+    0%, 100% {
+        transform: translateY(0) translateX(0) scale(1);
+    }
+    50% {
+        transform: translateY(-24px) translateX(9px) scale(1.06);
+    }
+}
+
 /* LUXURY WASH FOAM */
 
 .foam {
@@ -464,6 +549,10 @@ button:disabled {
 
 <div class="waves" aria-hidden="true"></div>
 <div class="foam" aria-hidden="true"></div>
+<div class="soap-bubble one" aria-hidden="true"></div>
+<div class="soap-bubble two" aria-hidden="true"></div>
+<div class="soap-bubble three" aria-hidden="true"></div>
+<div class="soap-bubble four" aria-hidden="true"></div>
 
 <div class="container">
 
