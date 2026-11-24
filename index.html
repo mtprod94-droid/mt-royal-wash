@@ -820,6 +820,65 @@ button:disabled {
         animation-iteration-count: 1 !important;
     }
 }
+
+/* MT ROYAL WASH - LOGIN FIELD DESIGN */
+
+.login-section input,
+.login-section select {
+    display: block;
+    width: 100%;
+    height: 58px;
+    box-sizing: border-box;
+    padding: 0 18px;
+    font-size: 16px;
+    font-family: 'DM Sans', sans-serif;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.login-section select {
+    cursor: pointer;
+}
+
+/* LOGIN SECTIONS */
+
+.login-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    width: 100%;
+}
+
+.login-section {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.login-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    color: #2d6592;
+    letter-spacing: 1px;
+}
+
+.login-section button {
+    width: 100%;
+    min-height: 54px;
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 4px;
+}
+
+.login-section + .login-section {
+    padding-top: 24px;
+    border-top: 1px solid rgba(45, 101, 146, 0.2);
+}
 </style>
 </head>
 
@@ -1110,52 +1169,41 @@ button:disabled {
 
 </div>
 
-<script>
 const LOGIN_URL =
 "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/username-login";
-
-const form = document.getElementById("loginForm");
-const button = document.getElementById("loginButton");
-const message = document.getElementById("message");
-
-let currentSession = null;
-
 const USERS_URL =
-    "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/list-users";
-
+"https://cgilxwdxiakfriroixih.supabase.co/functions/v1/list-users";
+const message = document.getElementById("message");
+let currentSession = null;
+// =====================================
+// MITARBEITER AUTOMATISCH LADEN
+// =====================================
 async function loadUsers() {
-    const usernameSelect = document.getElementById("username");
-
+    const usernameSelect =
+        document.getElementById("employeeUsername");
     try {
         const response = await fetch(USERS_URL, {
             method: "GET"
         });
-
         const data = await response.json();
-
         if (!response.ok || !Array.isArray(data.users)) {
-            throw new Error("Impossible de charger les utilisateurs.");
+            throw new Error("Impossible de charger les employés.");
         }
-
         usernameSelect.innerHTML = `
             <option value="" disabled selected>
-                Choisir un utilisateur
+                Choisir un employé
             </option>
         `;
-
         data.users.forEach(user => {
             const option = document.createElement("option");
-
             option.value = user.username;
             option.textContent =
-                user.full_name + " (" + user.username + ")";
-
+                (user.full_name || user.username) +
+                " (" + user.username + ")";
             usernameSelect.appendChild(option);
         });
-
     } catch (error) {
         console.error("Erreur utilisateurs:", error);
-
         usernameSelect.innerHTML = `
             <option value="" disabled selected>
                 Erreur de chargement
@@ -1163,25 +1211,20 @@ async function loadUsers() {
         `;
     }
 }
-
 loadUsers();
-
-form.addEventListener("submit", async function(event) {
-
-    event.preventDefault();
-
-    const username =
-        document.getElementById("username").value.trim();
-
-    const password =
-        document.getElementById("password").value;
-
+// =====================================
+// FONCTION DE CONNEXION
+// =====================================
+async function login(username, password, button, buttonText) {
+    if (!username || !password) {
+        message.textContent =
+            "Veuillez remplir tous les champs.";
+        return;
+    }
     button.disabled = true;
     button.textContent = "CONNEXION...";
     message.textContent = "";
-
     try {
-
         const response = await fetch(LOGIN_URL, {
             method: "POST",
             headers: {
@@ -1192,58 +1235,77 @@ form.addEventListener("submit", async function(event) {
                 password: password
             })
         });
-
         const data = await response.json();
-
         if (!response.ok || !data.access_token) {
             throw new Error(
                 data.error || "Identifiants incorrects."
             );
         }
-
         currentSession = data;
-
         document.getElementById("loginCard")
             .classList.add("hidden");
-
         document.getElementById("dashboard")
             .classList.remove("hidden");
-
         document.getElementById("welcomeUser")
-            .textContent = "Utilisateur : " + data.user.username;
-
-        document.getElementById("password").value = "";
-
+            .textContent =
+            "Utilisateur : " + data.user.username;
+        document.getElementById("adminPassword").value = "";
+        document.getElementById("employeePassword").value = "";
     } catch (error) {
-
         message.textContent =
             error.message || "Erreur de connexion.";
-
     } finally {
-
         button.disabled = false;
-        button.textContent = "SE CONNECTER";
-
+        button.textContent = buttonText;
     }
-
-});
-
+}
+// =====================================
+// CONNEXION ADMINISTRATEUR
+// =====================================
+document.getElementById("adminLoginButton")
+    .addEventListener("click", function() {
+        const username =
+            document.getElementById("adminUsername").value.trim();
+        const password =
+            document.getElementById("adminPassword").value;
+        login(
+            username,
+            password,
+            this,
+            "CONNEXION ADMINISTRATEUR"
+        );
+    });
+// =====================================
+// CONNEXION EMPLOYÉ
+// =====================================
+document.getElementById("employeeLoginButton")
+    .addEventListener("click", function() {
+        const username =
+            document.getElementById("employeeUsername").value;
+        const password =
+            document.getElementById("employeePassword").value;
+        login(
+            username,
+            password,
+            this,
+            "CONNEXION EMPLOYÉ"
+        );
+    });
+// =====================================
+// DÉCONNEXION
+// =====================================
 function logout() {
-
     currentSession = null;
-
     document.getElementById("dashboard")
         .classList.add("hidden");
-
     document.getElementById("loginCard")
         .classList.remove("hidden");
-
-    document.getElementById("username").value = "";
-    document.getElementById("password").value = "";
-
+    document.getElementById("adminUsername").value = "";
+    document.getElementById("adminPassword").value = "";
+    document.getElementById("employeeUsername").selectedIndex = 0;
+    document.getElementById("employeePassword").value = "";
     message.textContent = "";
 }
-</script>
 
 </body>
 </html>
