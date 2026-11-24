@@ -319,33 +319,66 @@ body {
     }
 }
 
-/* LUXURY WASH FOAM */
+/* REALISTIC ROYAL WASH FOAM */
 
 .foam {
     position: fixed;
-    bottom: -25px;
+    bottom: -12px;
     left: -5%;
     width: 110%;
-    height: 75px;
+    height: 100px;
     z-index: 1;
     pointer-events: none;
-    opacity: .75;
+    opacity: .9;
+
     background:
-        radial-gradient(circle at 5% 70%, white 0 22px, transparent 23px),
-        radial-gradient(circle at 12% 55%, #fff 0 30px, transparent 31px),
-        radial-gradient(circle at 22% 75%, white 0 24px, transparent 25px),
-        radial-gradient(circle at 34% 60%, #fff 0 32px, transparent 33px),
-        radial-gradient(circle at 48% 75%, white 0 25px, transparent 26px),
-        radial-gradient(circle at 61% 55%, #fff 0 30px, transparent 31px),
-        radial-gradient(circle at 75% 70%, white 0 27px, transparent 28px),
-        radial-gradient(circle at 89% 55%, #fff 0 32px, transparent 33px),
-        radial-gradient(circle at 98% 75%, white 0 25px, transparent 26px);
-    animation: foamMove 7s ease-in-out infinite alternate;
+        radial-gradient(circle, rgba(255,255,255,.98) 1px, transparent 2px) 0 0 / 13px 13px,
+        radial-gradient(circle, rgba(255,255,255,.85) 2px, transparent 3px) 5px 7px / 19px 17px,
+        radial-gradient(ellipse at 50% 100%, #ffffff 0%, #f5fbff 38%, rgba(220,242,255,.85) 65%, transparent 100%);
+    
+    mask-image: linear-gradient(to top, black 0%, black 65%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to top, black 0%, black 65%, transparent 100%);
+
+    animation: foamFlow 9s ease-in-out infinite alternate;
 }
 
-@keyframes foamMove {
-    from { transform: translateX(-8px); }
-    to { transform: translateX(12px); }
+.foam::before,
+.foam::after {
+    content: "";
+    position: absolute;
+    bottom: 15px;
+    width: 100%;
+    height: 65px;
+    border-radius: 50%;
+
+    background:
+        radial-gradient(circle at 5% 65%, white 0 4px, transparent 5px),
+        radial-gradient(circle at 13% 35%, white 0 3px, transparent 4px),
+        radial-gradient(circle at 22% 70%, white 0 5px, transparent 6px),
+        radial-gradient(circle at 34% 40%, white 0 4px, transparent 5px),
+        radial-gradient(circle at 46% 65%, white 0 3px, transparent 4px),
+        radial-gradient(circle at 58% 35%, white 0 5px, transparent 6px),
+        radial-gradient(circle at 70% 65%, white 0 4px, transparent 5px),
+        radial-gradient(circle at 82% 40%, white 0 3px, transparent 4px),
+        radial-gradient(circle at 94% 65%, white 0 5px, transparent 6px);
+
+    filter: blur(1px);
+}
+
+.foam::after {
+    bottom: 28px;
+    opacity: .65;
+    transform: scaleX(-1);
+    filter: blur(2px);
+}
+
+@keyframes foamFlow {
+    from {
+        transform: translateX(-10px);
+    }
+    to {
+        transform: translateX(10px);
+    }
 }
 
 /* MAIN CONTENT */
