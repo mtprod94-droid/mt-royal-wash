@@ -234,6 +234,35 @@ body {
     to { transform: translateX(-30%) translateY(-8px); }
 }
 
+/* LUXURY WASH FOAM */
+
+.foam {
+    position: fixed;
+    bottom: -25px;
+    left: -5%;
+    width: 110%;
+    height: 75px;
+    z-index: 1;
+    pointer-events: none;
+    opacity: .75;
+    background:
+        radial-gradient(circle at 5% 70%, white 0 22px, transparent 23px),
+        radial-gradient(circle at 12% 55%, #fff 0 30px, transparent 31px),
+        radial-gradient(circle at 22% 75%, white 0 24px, transparent 25px),
+        radial-gradient(circle at 34% 60%, #fff 0 32px, transparent 33px),
+        radial-gradient(circle at 48% 75%, white 0 25px, transparent 26px),
+        radial-gradient(circle at 61% 55%, #fff 0 30px, transparent 31px),
+        radial-gradient(circle at 75% 70%, white 0 27px, transparent 28px),
+        radial-gradient(circle at 89% 55%, #fff 0 32px, transparent 33px),
+        radial-gradient(circle at 98% 75%, white 0 25px, transparent 26px);
+    animation: foamMove 7s ease-in-out infinite alternate;
+}
+
+@keyframes foamMove {
+    from { transform: translateX(-8px); }
+    to { transform: translateX(12px); }
+}
+
 /* MAIN CONTENT */
 
 .container {
@@ -434,6 +463,7 @@ button:disabled {
 </div>
 
 <div class="waves" aria-hidden="true"></div>
+<div class="foam" aria-hidden="true"></div>
 
 <div class="container">
 
