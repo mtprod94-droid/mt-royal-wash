@@ -1161,6 +1161,106 @@ button:disabled {
 
 </div>
 
+<!-- EMPLOYEE DASHBOARD -->
+<div class="dashboard hidden" id="employeeDashboard">
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+            <h2>MT ROYAL WASH</h2>
+            <span>ESPACE EMPLOYÉ</span>
+        </div>
+
+        <nav class="sidebar-menu">
+            <button class="active" type="button">
+                Nouvelle lavage
+            </button>
+
+            <button type="button">
+                Mes lavages
+            </button>
+        </nav>
+
+        <button class="logout-button" onclick="logout()">
+            SE DÉCONNECTER
+        </button>
+
+    </aside>
+
+    <main class="dashboard-main">
+
+        <header class="dashboard-header">
+
+            <div>
+                <h1>Espace Employé</h1>
+                <p>Bienvenue dans votre espace de travail.</p>
+            </div>
+
+            <div class="admin-profile">
+                <span>EMPLOYEE</span>
+                <p id="employeeWelcomeUser"></p>
+            </div>
+
+        </header>
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <span>MES LAVAGES DU JOUR</span>
+                <h2 id="employeeDailyWashes">0</h2>
+            </div>
+
+            <div class="stat-card">
+                <span>MES RECETTES DU JOUR</span>
+                <h2 id="employeeDailyRevenue">0 FCFA</h2>
+            </div>
+
+        </section>
+
+        <section class="dashboard-content">
+
+            <h2>Enregistrer un lavage</h2>
+
+            <p>
+                Enregistrez chaque véhicule après son lavage.
+            </p>
+
+            <label for="employeeVehicleType">
+                Type de véhicule
+            </label>
+
+            <select id="employeeVehicleType">
+                <option value="">Choisir un véhicule</option>
+                <option value="moto">Moto – 500 FCFA</option>
+                <option value="small_car">Petite voiture – 2 000 FCFA</option>
+                <option value="suv">SUV / 4x4 – 2 500 FCFA</option>
+            </select>
+
+            <label for="employeePaymentMethod">
+                Mode de paiement
+            </label>
+
+            <select id="employeePaymentMethod">
+                <option value="">Choisir le paiement</option>
+                <option value="cash">Espèces</option>
+                <option value="tmoney">TMoney</option>
+                <option value="flooz">Flooz</option>
+            </select>
+
+            <button type="button" disabled>
+                ENREGISTRER LE LAVAGE
+            </button>
+
+            <p>
+                Fonction en cours de configuration.
+            </p>
+
+        </section>
+
+    </main>
+
+</div>
+
     <div class="footer">
         VOTRE VÉHICULE MÉRITE LE MEILLEUR.
         <br>
