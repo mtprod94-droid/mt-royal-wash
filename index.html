@@ -1314,6 +1314,50 @@ button:disabled {
         de MT ROYAL WASH.
     </p>
 
+    <div class="form-group">
+        <label for="expenseCategory">Catégorie</label>
+        <select id="expenseCategory">
+            <option value="">Choisir une catégorie</option>
+            <option value="Produits de lavage">Produits de lavage</option>
+            <option value="Électricité">Électricité</option>
+            <option value="Eau">Eau</option>
+            <option value="Entretien">Entretien</option>
+            <option value="Transport">Transport</option>
+            <option value="Salaires">Salaires</option>
+            <option value="Autres">Autres</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="expenseDescription">Description</label>
+        <input
+            type="text"
+            id="expenseDescription"
+            placeholder="Description de la dépense"
+        >
+    </div>
+
+    <div class="form-group">
+        <label for="expenseAmount">Montant (FCFA)</label>
+        <input
+            type="number"
+            id="expenseAmount"
+            min="1"
+            step="1"
+            placeholder="Exemple : 5000"
+        >
+    </div>
+
+    <button type="button" onclick="adminRegisterExpense()">
+        Enregistrer la dépense
+    </button>
+
+    <div id="expenseMessage"></div>
+
+    <hr>
+
+    <h3>Historique des dépenses</h3>
+
     <div id="adminExpensesList">
         <p>Chargement des dépenses...</p>
     </div>
@@ -1491,6 +1535,9 @@ const ADMIN_DASHBOARD_URL =
 
 const ADMIN_REVENUE_URL = 
 "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/admin-revenue";
+
+const ADMIN_EXPENSES_URL = 
+"https://cgilxwdxiakfriroixih.supabase.co/functions/v1/admin-expenses";
 
 const LIST_USERS_URL = 
 "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/list-users";
@@ -2092,6 +2139,60 @@ async function loadAdminRevenue() {
     }
 }
 
+async function loadAdminExpenses() {
+    const list = document.getElementById("adminExpensesList");
+
+    list.innerHTML = "<p>Chargement des dépenses...</p>";
+
+    try {
+        const response = await fetch(ADMIN_EXPENSES_URL, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${currentSession.access_token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || "Erreur de chargement");
+        }
+
+        list.innerHTML = "";
+
+        if (!data.expenses || data.expenses.length === 0) {
+            list.innerHTML = "<p>Aucune dépense enregistrée pour le moment.</p>";
+            return;
+        }
+
+        data.expenses.forEach(expense => {
+            const item = document.createElement("div");
+            item.className = "expense-item";
+
+            const category = document.createElement("h4");
+            category.textContent = expense.category;
+
+            const description = document.createElement("p");
+            description.textContent = expense.description || "Aucune description";
+
+            const amount = document.createElement("strong");
+            amount.textContent =
+                Number(expense.amount).toLocaleString("fr-FR") + " FCFA";
+
+            const date = document.createElement("small");
+            date.textContent = new Date(expense.created_at).toLocaleString("fr-FR");
+
+            item.append(category, description, amount, date);
+            list.appendChild(item);
+        });
+
+    } catch (error) {
+        console.error("Admin expenses error:", error);
+        list.innerHTML = "<p>Erreur lors du chargement des dépenses.</p>";
+    }
+}
+
 function showAdminTab(tab) {
     const views = {
         dashboard: [
@@ -2146,6 +2247,10 @@ if (tab === "vehicles") {
 
 if (tab === "revenue") {
     loadAdminRevenue();
+}
+
+if (tab === "expenses") {
+    loadAdminExpenses();
 }
 
 }
