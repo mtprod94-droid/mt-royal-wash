@@ -982,6 +982,79 @@ button:disabled {
     }
 }
 
+/* ADMIN - NEW WASH SELECTION DESIGN */
+
+#adminNewWashView .wash-selection-group {
+    margin-top: 25px;
+}
+
+#adminNewWashView .wash-selection-title {
+    display: block;
+    margin-bottom: 13px;
+    color: #18324f;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+}
+
+#adminNewWashView .wash-choice-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+#adminNewWashView .wash-choice {
+    min-height: 90px;
+    padding: 15px 10px;
+    border: 1px solid #dce8f5;
+    border-radius: 14px;
+    background: #f8fbff;
+    color: #18324f;
+    box-shadow: none;
+    letter-spacing: 0;
+    text-align: center;
+    transition: .2s ease;
+}
+
+#adminNewWashView .wash-choice strong {
+    display: block;
+    margin-top: 7px;
+    font-size: 14px;
+}
+
+#adminNewWashView .wash-choice span {
+    display: block;
+    margin-top: 5px;
+    color: #71859b;
+    font-size: 12px;
+}
+
+#adminNewWashView .wash-choice.selected {
+    border: 2px solid #287eae;
+    background: #eaf5ff;
+    color: #1769aa;
+}
+
+#adminNewWashView .wash-choice:focus-visible {
+    outline: 3px solid rgba(40,126,174,.25);
+    outline-offset: 3px;
+}
+
+#adminNewWashView .wash-hidden-select {
+    display: none;
+}
+
+#adminNewWashView #adminRegisterWashButton {
+    margin-top: 28px;
+}
+
+@media (max-width: 380px) {
+    #adminNewWashView .wash-choice-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 </style>
 </head>
 
@@ -1300,26 +1373,89 @@ button:disabled {
     <h2>Enregistrer un lavage</h2>
 
     <p>
-        Enregistrez un nouveau lavage pour un véhicule.
+        Sélectionnez le véhicule et le mode de paiement.
     </p>
 
-    <label for="adminVehicleType">Type de véhicule</label>
+    <!-- TYPE DE VÉHICULE -->
 
-    <select id="adminVehicleType">
-        <option value="">Choisir un véhicule</option>
-        <option value="moto">Moto – 500 FCFA</option>
-        <option value="small_car">Petite voiture – 2 000 FCFA</option>
-        <option value="suv">SUV / 4x4 – 2 500 FCFA</option>
-    </select>
+    <div class="wash-selection-group">
 
-    <label for="adminPaymentMethod">Mode de paiement</label>
+        <label class="wash-selection-title">
+            TYPE DE VÉHICULE
+        </label>
 
-    <select id="adminPaymentMethod">
-        <option value="">Choisir le paiement</option>
-        <option value="cash">Espèces</option>
-        <option value="tmoney">TMoney</option>
-        <option value="flooz">Flooz</option>
-    </select>
+        <div class="wash-choice-grid">
+
+            <button type="button" class="wash-choice"
+                onclick="selectWashOption('adminVehicleType', 'moto', this)">
+                🏍️
+                <strong>Moto</strong>
+                <span>500 FCFA</span>
+            </button>
+
+            <button type="button" class="wash-choice"
+                onclick="selectWashOption('adminVehicleType', 'small_car', this)">
+                🚗
+                <strong>Petite voiture</strong>
+                <span>2 000 FCFA</span>
+            </button>
+
+            <button type="button" class="wash-choice"
+                onclick="selectWashOption('adminVehicleType', 'suv', this)">
+                🚙
+                <strong>SUV / 4x4</strong>
+                <span>2 500 FCFA</span>
+            </button>
+
+        </div>
+
+        <select id="adminVehicleType" class="wash-hidden-select">
+            <option value="">Choisir un véhicule</option>
+            <option value="moto">Moto</option>
+            <option value="small_car">Petite voiture</option>
+            <option value="suv">SUV / 4x4</option>
+        </select>
+
+    </div>
+
+    <!-- MODE DE PAIEMENT -->
+
+    <div class="wash-selection-group">
+
+        <label class="wash-selection-title">
+            MODE DE PAIEMENT
+        </label>
+
+        <div class="wash-choice-grid">
+
+            <button type="button" class="wash-choice"
+                onclick="selectWashOption('adminPaymentMethod', 'cash', this)">
+                💵
+                <strong>Espèces</strong>
+            </button>
+
+            <button type="button" class="wash-choice"
+                onclick="selectWashOption('adminPaymentMethod', 'tmoney', this)">
+                📱
+                <strong>TMoney</strong>
+            </button>
+
+            <button type="button" class="wash-choice"
+                onclick="selectWashOption('adminPaymentMethod', 'flooz', this)">
+                📲
+                <strong>Flooz</strong>
+            </button>
+
+        </div>
+
+        <select id="adminPaymentMethod" class="wash-hidden-select">
+            <option value="">Choisir le paiement</option>
+            <option value="cash">Espèces</option>
+            <option value="tmoney">TMoney</option>
+            <option value="flooz">Flooz</option>
+        </select>
+
+    </div>
 
     <button type="button" id="adminRegisterWashButton"
         onclick="adminRegisterWash()">
@@ -1854,6 +1990,70 @@ function selectWashOption(selectId, value, button) {
     // Ausgewählte Karte hervorheben
     button.classList.add("selected");
     button.setAttribute("aria-pressed", "true");
+}
+
+async function adminRegisterWash() {
+    const vehicleType = document.getElementById("adminVehicleType").value;
+    const paymentMethod = document.getElementById("adminPaymentMethod").value;
+    const button = document.getElementById("adminRegisterWashButton");
+    const message = document.getElementById("adminWashMessage");
+
+    if (!currentSession?.access_token) {
+        message.textContent = "Session administrateur invalide.";
+        return;
+    }
+
+    if (!vehicleType || !paymentMethod) {
+        message.textContent = "Veuillez choisir le véhicule et le paiement.";
+        return;
+    }
+
+    button.disabled = true;
+    message.textContent = "Enregistrement en cours...";
+
+    try {
+        const response = await fetch(
+            "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/register-wash",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${currentSession.access_token}`
+                },
+                body: JSON.stringify({
+                    vehicle_type: vehicleType,
+                    payment_method: paymentMethod
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "Erreur lors de l'enregistrement.");
+        }
+
+        message.textContent =
+            `Lavage enregistré avec succès ! N° ${data.transaction?.transaction_number ?? "—"}`;
+
+        document.getElementById("adminVehicleType").value = "";
+        document.getElementById("adminPaymentMethod").value = "";
+
+        document.querySelectorAll("#adminNewWashView .wash-choice").forEach(card => {
+            card.classList.remove("selected");
+            card.setAttribute("aria-pressed", "false");
+        });
+
+        await loadAdminDashboard();
+        await loadAdminRevenue();
+        await loadAdminVehicles();
+        await loadAdminHistory();
+
+    } catch (error) {
+        message.textContent = error.message;
+    } finally {
+        button.disabled = false;
+    }
 }
 
 async function registerWash() {
