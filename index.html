@@ -2262,6 +2262,82 @@ async function adminRegisterExpense() {
     }
 }
 
+async function loadAdminHistory() {
+    const list = document.getElementById("adminHistoryList");
+
+    list.innerHTML = "<p>Chargement de l'historique...</p>";
+
+    try {
+        const response = await fetch(ADMIN_REVENUE_URL, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${currentSession.access_token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({})
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || "Erreur de chargement");
+        }
+
+        list.innerHTML = "";
+
+        if (!data.history || data.history.length === 0) {
+            list.innerHTML = "<p>Aucune transaction enregistrée pour le moment.</p>";
+            return;
+        }
+
+        data.history.forEach(transaction => {
+            const item = document.createElement("div");
+            item.className = "history-item";
+
+            const title = document.createElement("h4");
+            title.textContent =
+                "Lavage #" + transaction.transaction_number;
+
+            const vehicle = document.createElement("p");
+            vehicle.textContent =
+                "Véhicule : " + transaction.vehicle_type;
+
+            const employee = document.createElement("p");
+            employee.textContent =
+                "Employé : " + transaction.employee;
+
+            const payment = document.createElement("p");
+            payment.textContent =
+                "Paiement : " + transaction.payment_method;
+
+            const amount = document.createElement("strong");
+            amount.textContent =
+                Number(transaction.amount).toLocaleString("fr-FR") +
+                " FCFA";
+
+            const date = document.createElement("small");
+            date.textContent =
+                new Date(transaction.created_at).toLocaleString("fr-FR");
+
+            item.append(
+                title,
+                vehicle,
+                employee,
+                payment,
+                amount,
+                date
+            );
+
+            list.appendChild(item);
+        });
+
+    } catch (error) {
+        console.error("Admin history error:", error);
+        list.innerHTML =
+            "<p>Erreur lors du chargement de l'historique.</p>";
+    }
+}
+
 function showAdminTab(tab) {
     const views = {
         dashboard: [
@@ -2320,6 +2396,10 @@ if (tab === "revenue") {
 
 if (tab === "expenses") {
     loadAdminExpenses();
+}
+
+if (tab === "history") {
+    loadAdminHistory();
 }
 
 }
