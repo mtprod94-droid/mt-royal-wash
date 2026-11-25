@@ -1492,6 +1492,9 @@ const ADMIN_DASHBOARD_URL =
 const LIST_USERS_URL = 
 "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/list-users";
 
+const ADMIN_VEHICLES_URL = 
+"https://cgilxwdxiakfriroixih.supabase.co/rest/v1/vehicles?select=id,vehicle_type,price,created_at,employee_id&order=created_at.desc";
+
 const message = document.getElementById("message");
 let currentSession = null;
 // =====================================
@@ -1899,6 +1902,70 @@ async function loadAdminEmployees() {
     }
 }
 
+async function loadAdminVehicles() {
+    const container = document.getElementById("adminVehiclesList");
+
+    container.textContent = "Chargement des véhicules...";
+
+    if (!currentSession || !currentSession.access_token) {
+        container.textContent = "Session administrateur introuvable.";
+        return;
+    }
+
+    try {
+        const response = await fetch(ADMIN_VEHICLES_URL, {
+            method: "GET",
+            headers: {
+                "apikey": SUPABASE_ANON_KEY,
+                "Authorization": `Bearer ${currentSession.access_token}`
+            }
+        });
+
+        const vehicles = await response.json();
+
+        if (!response.ok) {
+            throw new Error(vehicles.message || "Erreur de chargement.");
+        }
+
+        container.replaceChildren();
+
+        if (!Array.isArray(vehicles) || vehicles.length === 0) {
+            container.textContent = "Aucun véhicule enregistré pour le moment.";
+            return;
+        }
+
+        const vehicleNames = {
+            moto: "Moto",
+            small_car: "Petite voiture",
+            suv: "SUV / 4x4"
+        };
+
+        vehicles.forEach((vehicle) => {
+            const card = document.createElement("div");
+            card.className = "history-item";
+
+            const title = document.createElement("strong");
+            title.textContent =
+                vehicleNames[vehicle.vehicle_type] || vehicle.vehicle_type;
+
+            const price = document.createElement("p");
+            price.textContent =
+                Number(vehicle.price).toLocaleString("fr-FR") + " FCFA";
+
+            const date = document.createElement("p");
+            date.textContent =
+                "Date : " + new Date(vehicle.created_at).toLocaleString("fr-FR");
+
+            card.append(title, price, date);
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error("Admin vehicles error:", error);
+        container.textContent = "Erreur lors du chargement des véhicules.";
+    }
+}
+
 function showAdminTab(tab) {
     const views = {
         dashboard: [
@@ -1946,6 +2013,11 @@ function showAdminTab(tab) {
     if (tab === "employees") {
     loadAdminEmployees();
 }
+
+if (tab === "vehicles") {
+    loadAdminVehicles();
+}
+
 }
 
 function logout() {
