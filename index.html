@@ -1247,13 +1247,14 @@ button:disabled {
                 <option value="flooz">Flooz</option>
             </select>
 
-            <button type="button" disabled>
-                ENREGISTRER LE LAVAGE
-            </button>
+            <button
+    type="button"
+    id="registerWashButton"
+    onclick="registerWash()">
+    ENREGISTRER LE LAVAGE
+</button>
 
-            <p>
-                Fonction en cours de configuration.
-            </p>
+<p id="washMessage" aria-live="polite"></p>
 
         </section>
 
