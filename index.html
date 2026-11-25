@@ -1489,6 +1489,9 @@ const EMPLOYEE_HISTORY_URL =
 const ADMIN_DASHBOARD_URL = 
 "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/admin-dashboard";
 
+const ADMIN_REVENUE_URL = 
+"https://cgilxwdxiakfriroixih.supabase.co/functions/v1/admin-revenue";
+
 const LIST_USERS_URL = 
 "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/list-users";
 
@@ -1969,6 +1972,126 @@ async function loadAdminVehicles() {
     }
 }
 
+async function loadAdminRevenue() {
+    const container = document.getElementById("adminRevenueList");
+
+    container.textContent = "Chargement des recettes...";
+
+    if (!currentSession || !currentSession.access_token) {
+        container.textContent = "Session administrateur introuvable.";
+        return;
+    }
+
+    try {
+        const response = await fetch(ADMIN_REVENUE_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${currentSession.access_token}`
+            },
+            body: JSON.stringify({})
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || "Erreur de chargement.");
+        }
+
+        container.replaceChildren();
+
+        const formatMoney = value =>
+            Number(value || 0).toLocaleString("fr-FR") + " FCFA";
+
+        const summary = document.createElement("div");
+        summary.className = "stats-grid";
+
+        const summaryItems = [
+            ["Recettes totales", data.totals.allTime],
+            ["Aujourd'hui", data.totals.today],
+            ["Cette semaine", data.totals.week],
+            ["Ce mois", data.totals.month]
+        ];
+
+        summaryItems.forEach(([label, amount]) => {
+            const card = document.createElement("div");
+            card.className = "stat-card";
+
+            const title = document.createElement("p");
+            title.textContent = label;
+
+            const value = document.createElement("h3");
+            value.textContent = formatMoney(amount);
+
+            card.append(title, value);
+            summary.appendChild(card);
+        });
+
+        container.appendChild(summary);
+
+        const paymentTitle = document.createElement("h3");
+        paymentTitle.textContent = "Recettes par mode de paiement";
+        container.appendChild(paymentTitle);
+
+        Object.entries(data.paymentSummary).forEach(([method, amount]) => {
+            const item = document.createElement("p");
+            const names = {
+                cash: "Espèces",
+                tmoney: "TMoney",
+                flooz: "Flooz"
+            };
+
+            item.textContent =
+                (names[method] || method) + " : " + formatMoney(amount);
+
+            container.appendChild(item);
+        });
+
+        const historyTitle = document.createElement("h3");
+        historyTitle.textContent = "Historique des recettes";
+        container.appendChild(historyTitle);
+
+        if (!Array.isArray(data.history) || data.history.length === 0) {
+            const empty = document.createElement("p");
+            empty.textContent = "Aucune recette enregistrée pour le moment.";
+            container.appendChild(empty);
+            return;
+        }
+
+        data.history.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "history-item";
+
+            const title = document.createElement("strong");
+            title.textContent =
+                "Transaction #" + item.transaction_number;
+
+            const vehicle = document.createElement("p");
+            vehicle.textContent = "Véhicule : " + item.vehicle_type;
+
+            const amount = document.createElement("p");
+            amount.textContent = "Montant : " + formatMoney(item.amount);
+
+            const payment = document.createElement("p");
+            payment.textContent = "Paiement : " + item.payment_method;
+
+            const employee = document.createElement("p");
+            employee.textContent = "Employé : " + item.employee;
+
+            const date = document.createElement("p");
+            date.textContent =
+                "Date : " + new Date(item.created_at).toLocaleString("fr-FR");
+
+            card.append(title, vehicle, amount, payment, employee, date);
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error("Admin revenue error:", error);
+        container.textContent = "Erreur lors du chargement des recettes.";
+    }
+}
+
 function showAdminTab(tab) {
     const views = {
         dashboard: [
@@ -2019,6 +2142,10 @@ function showAdminTab(tab) {
 
 if (tab === "vehicles") {
     loadAdminVehicles();
+}
+
+if (tab === "revenue") {
+    loadAdminRevenue();
 }
 
 }
