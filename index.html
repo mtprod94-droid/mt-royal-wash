@@ -1421,6 +1421,71 @@ document.getElementById("employeeLoginButton")
             "CONNEXION EMPLOYÉ"
         );
     });
+    
+    // =====================================
+// ENREGISTRER UN LAVAGE
+// =====================================
+async function registerWash() {
+    const button = document.getElementById("registerWashButton");
+    const message = document.getElementById("washMessage");
+
+    const vehicleType =
+        document.getElementById("employeeVehicleType").value;
+
+    const paymentMethod =
+        document.getElementById("employeePaymentMethod").value;
+
+    if (!currentSession || !currentSession.access_token) {
+        message.textContent = "Session expirée. Veuillez vous reconnecter.";
+        return;
+    }
+
+    if (!vehicleType || !paymentMethod) {
+        message.textContent = "Veuillez remplir tous les champs.";
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "ENREGISTREMENT...";
+    message.textContent = "";
+
+    try {
+        const response = await fetch(
+            "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/register-wash",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + currentSession.access_token
+                },
+                body: JSON.stringify({
+                    vehicle_type: vehicleType,
+                    payment_method: paymentMethod
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(
+                data.error || "Erreur lors de l'enregistrement."
+            );
+        }
+
+        message.textContent =
+            "Lavage enregistré avec succès ! N° " +
+            data.transaction.transaction_number;
+
+    } catch (error) {
+        message.textContent =
+            error.message || "Erreur de connexion au serveur.";
+    } finally {
+        button.disabled = false;
+        button.textContent = "ENREGISTRER LE LAVAGE";
+    }
+}
+
 // =====================================
 // DÉCONNEXION
 // =====================================
