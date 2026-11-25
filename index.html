@@ -879,6 +879,36 @@ button:disabled {
     padding-top: 24px;
     border-top: 1px solid rgba(45, 101, 146, 0.2);
 }
+/* EMPLOYEE WASH HISTORY */
+
+.history-item {
+    background: #ffffff;
+    border: 1px solid #dce8f5;
+    border-left: 4px solid #3b82f6;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 12px;
+}
+
+.history-item strong {
+    display: block;
+    color: #1e3a5f;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.history-item p {
+    color: #526579;
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.history-item small {
+    display: block;
+    color: #8293a6;
+    margin-top: 8px;
+}
+
 </style>
 </head>
 
@@ -1537,8 +1567,83 @@ function showEmployeeTab(tab) {
     }
 
     if (tab === "history") {
-        historyView.classList.remove("hidden");
-        historyTab.classList.add("active");
+    historyView.classList.remove("hidden");
+    historyTab.classList.add("active");
+
+    loadEmployeeHistory();
+}
+}
+
+async function loadEmployeeHistory() {
+    const historyList = document.getElementById("employeeHistoryList");
+
+    if (!currentSession || !currentSession.access_token) {
+        historyList.textContent = "Session invalide. Veuillez vous reconnecter.";
+        return;
+    }
+
+    historyList.textContent = "Chargement de l'historique...";
+
+    try {
+        const response = await fetch(EMPLOYEE_HISTORY_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${currentSession.access_token}`
+            },
+            body: JSON.stringify({})
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "Erreur de chargement.");
+        }
+
+        historyList.replaceChildren();
+
+        if (!data.history || data.history.length === 0) {
+            historyList.textContent = "Aucun lavage enregistré pour le moment.";
+            return;
+        }
+
+        data.history.forEach((wash) => {
+            const item = document.createElement("div");
+            item.className = "history-item";
+
+            const number = document.createElement("strong");
+            number.textContent = `Lavage N° ${wash.transaction_number}`;
+
+            const details = document.createElement("p");
+            const vehicleNames = {
+    moto: "Moto",
+    small_car: "Petite voiture",
+    suv: "SUV / 4x4"
+};
+
+details.textContent =
+    `${vehicleNames[wash.vehicle_type] || wash.vehicle_type} · ${Number(wash.amount).toLocaleString("fr-FR")} FCFA`;
+
+            const payment = document.createElement("p");
+            const paymentNames = {
+    cash: "Espèces",
+    tmoney: "TMoney",
+    flooz: "Flooz"
+};
+
+payment.textContent =
+    `Paiement : ${paymentNames[wash.payment_method] || wash.payment_method}`;
+
+            const date = document.createElement("small");
+            date.textContent = new Date(wash.created_at).toLocaleString("fr-FR");
+
+            item.append(number, details, payment, date);
+            historyList.appendChild(item);
+        });
+
+    } catch (error) {
+        console.error("Historique:", error);
+        historyList.textContent = "Impossible de charger l'historique.";
     }
 }
 
