@@ -1172,14 +1172,23 @@ button:disabled {
         </div>
 
         <nav class="sidebar-menu">
-            <button class="active" type="button">
-                Nouvelle lavage
-            </button>
 
-            <button type="button">
-                Mes lavages
-            </button>
-        </nav>
+    <button
+        class="active"
+        type="button"
+        id="employeeNewWashTab"
+        onclick="showEmployeeTab('new')">
+        Nouveau lavage
+    </button>
+
+    <button
+        type="button"
+        id="employeeHistoryTab"
+        onclick="showEmployeeTab('history')">
+        Mes lavages
+    </button>
+
+</nav>
 
         <button class="logout-button" onclick="logout()">
             SE DÉCONNECTER
@@ -1217,7 +1226,7 @@ button:disabled {
 
         </section>
 
-        <section class="dashboard-content">
+        <section class="dashboard-content" id="employeeNewWashView">
 
             <h2>Enregistrer un lavage</h2>
 
@@ -1258,6 +1267,21 @@ button:disabled {
 
         </section>
 
+<!-- HISTORIQUE DES LAVAGES -->
+<section class="dashboard-content hidden" id="employeeHistoryView">
+
+    <h2>Mes lavages</h2>
+
+    <p>
+        Retrouvez ici l'historique de vos lavages enregistrés.
+    </p>
+
+    <div id="employeeHistoryList">
+        <p>Chargement de l'historique...</p>
+    </div>
+
+</section>
+
     </main>
 
 </div>
@@ -1273,10 +1297,15 @@ button:disabled {
 <script>
 const LOGIN_URL =
 "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/username-login";
+
 const USERS_URL =
 "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/list-users";
+
 const CREATE_EMPLOYEE_URL = 
 "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/create-employee";
+
+const EMPLOYEE_HISTORY_URL = "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/employee-history";
+
 const message = document.getElementById("message");
 let currentSession = null;
 // =====================================
@@ -1489,6 +1518,30 @@ async function registerWash() {
 // =====================================
 // DÉCONNEXION
 // =====================================
+function showEmployeeTab(tab) {
+    const newWashView = document.getElementById("employeeNewWashView");
+    const historyView = document.getElementById("employeeHistoryView");
+
+    const newWashTab = document.getElementById("employeeNewWashTab");
+    const historyTab = document.getElementById("employeeHistoryTab");
+
+    newWashView.classList.add("hidden");
+    historyView.classList.add("hidden");
+
+    newWashTab.classList.remove("active");
+    historyTab.classList.remove("active");
+
+    if (tab === "new") {
+        newWashView.classList.remove("hidden");
+        newWashTab.classList.add("active");
+    }
+
+    if (tab === "history") {
+        historyView.classList.remove("hidden");
+        historyTab.classList.add("active");
+    }
+}
+
 function logout() {
     currentSession = null;
     
