@@ -909,6 +909,79 @@ button:disabled {
     margin-top: 8px;
 }
 
+/* EMPLOYEE - NEW WASH SELECTION DESIGN */
+
+#employeeNewWashView .wash-selection-group {
+    margin-top: 25px;
+}
+
+#employeeNewWashView .wash-selection-title {
+    display: block;
+    margin-bottom: 13px;
+    color: #18324f;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+}
+
+#employeeNewWashView .wash-choice-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+#employeeNewWashView .wash-choice {
+    min-height: 90px;
+    padding: 15px 10px;
+    border: 1px solid #dce8f5;
+    border-radius: 14px;
+    background: #f8fbff;
+    color: #18324f;
+    box-shadow: none;
+    letter-spacing: 0;
+    text-align: center;
+    transition: .2s ease;
+}
+
+#employeeNewWashView .wash-choice strong {
+    display: block;
+    margin-top: 7px;
+    font-size: 14px;
+}
+
+#employeeNewWashView .wash-choice span {
+    display: block;
+    margin-top: 5px;
+    color: #71859b;
+    font-size: 12px;
+}
+
+#employeeNewWashView .wash-choice.selected {
+    border: 2px solid #287eae;
+    background: #eaf5ff;
+    color: #1769aa;
+}
+
+#employeeNewWashView .wash-choice:focus-visible {
+    outline: 3px solid rgba(40,126,174,.25);
+    outline-offset: 3px;
+}
+
+#employeeNewWashView .wash-hidden-select {
+    display: none;
+}
+
+#employeeNewWashView #registerWashButton {
+    margin-top: 28px;
+}
+
+@media (max-width: 380px) {
+    #employeeNewWashView .wash-choice-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 </style>
 </head>
 
@@ -1451,44 +1524,111 @@ button:disabled {
 
         <section class="dashboard-content" id="employeeNewWashView">
 
-            <h2>Enregistrer un lavage</h2>
+    <h2>Enregistrer un lavage</h2>
 
-            <p>
-                Enregistrez chaque véhicule après son lavage.
-            </p>
+    <p>
+        Sélectionnez le véhicule et le mode de paiement.
+    </p>
 
-            <label for="employeeVehicleType">
-                Type de véhicule
-            </label>
+    <!-- TYPE DE VÉHICULE -->
 
-            <select id="employeeVehicleType">
-                <option value="">Choisir un véhicule</option>
-                <option value="moto">Moto – 500 FCFA</option>
-                <option value="small_car">Petite voiture – 2 000 FCFA</option>
-                <option value="suv">SUV / 4x4 – 2 500 FCFA</option>
-            </select>
+    <div class="wash-selection-group">
 
-            <label for="employeePaymentMethod">
-                Mode de paiement
-            </label>
+        <label class="wash-selection-title">
+            TYPE DE VÉHICULE
+        </label>
 
-            <select id="employeePaymentMethod">
-                <option value="">Choisir le paiement</option>
-                <option value="cash">Espèces</option>
-                <option value="tmoney">TMoney</option>
-                <option value="flooz">Flooz</option>
-            </select>
+        <div class="wash-choice-grid">
 
-            <button
-    type="button"
-    id="registerWashButton"
-    onclick="registerWash()">
-    ENREGISTRER LE LAVAGE
-</button>
+            <button type="button"
+                class="wash-choice"
+                onclick="selectWashOption('employeeVehicleType', 'moto', this)">
+                🏍️
+                <strong>Moto</strong>
+                <span>500 FCFA</span>
+            </button>
 
-<p id="washMessage" aria-live="polite"></p>
+            <button type="button"
+                class="wash-choice"
+                onclick="selectWashOption('employeeVehicleType', 'small_car', this)">
+                🚗
+                <strong>Petite voiture</strong>
+                <span>2 000 FCFA</span>
+            </button>
 
-        </section>
+            <button type="button"
+                class="wash-choice"
+                onclick="selectWashOption('employeeVehicleType', 'suv', this)">
+                🚙
+                <strong>SUV / 4x4</strong>
+                <span>2 500 FCFA</span>
+            </button>
+
+        </div>
+
+        <select id="employeeVehicleType" class="wash-hidden-select">
+            <option value="">Choisir un véhicule</option>
+            <option value="moto">Moto</option>
+            <option value="small_car">Petite voiture</option>
+            <option value="suv">SUV / 4x4</option>
+        </select>
+
+    </div>
+
+    <!-- MODE DE PAIEMENT -->
+
+    <div class="wash-selection-group">
+
+        <label class="wash-selection-title">
+            MODE DE PAIEMENT
+        </label>
+
+        <div class="wash-choice-grid">
+
+            <button type="button"
+                class="wash-choice"
+                onclick="selectWashOption('employeePaymentMethod', 'cash', this)">
+                💵
+                <strong>Espèces</strong>
+            </button>
+
+            <button type="button"
+                class="wash-choice"
+                onclick="selectWashOption('employeePaymentMethod', 'tmoney', this)">
+                📱
+                <strong>TMoney</strong>
+            </button>
+
+            <button type="button"
+                class="wash-choice"
+                onclick="selectWashOption('employeePaymentMethod', 'flooz', this)">
+                📲
+                <strong>Flooz</strong>
+            </button>
+
+        </div>
+
+        <select id="employeePaymentMethod" class="wash-hidden-select">
+            <option value="">Choisir le paiement</option>
+            <option value="cash">Espèces</option>
+            <option value="tmoney">TMoney</option>
+            <option value="flooz">Flooz</option>
+        </select>
+
+    </div>
+
+    <!-- ENREGISTREMENT -->
+
+    <button
+        type="button"
+        id="registerWashButton"
+        onclick="registerWash()">
+        ENREGISTRER LE LAVAGE
+    </button>
+
+    <p id="washMessage" aria-live="polite"></p>
+
+</section>
 
 <!-- HISTORIQUE DES LAVAGES -->
 <section class="dashboard-content hidden" id="employeeHistoryView">
@@ -1693,6 +1833,29 @@ document.getElementById("employeeLoginButton")
     // =====================================
 // ENREGISTRER UN LAVAGE
 // =====================================
+function selectWashOption(selectId, value, button) {
+    const select = document.getElementById(selectId);
+
+    if (!select) return;
+
+    // Auswahlwert setzen
+    select.value = value;
+
+    // Nur die Karten derselben Auswahlgruppe zurücksetzen
+    const grid = button.closest(".wash-choice-grid");
+
+    if (grid) {
+        grid.querySelectorAll(".wash-choice").forEach(choice => {
+            choice.classList.remove("selected");
+            choice.setAttribute("aria-pressed", "false");
+        });
+    }
+
+    // Ausgewählte Karte hervorheben
+    button.classList.add("selected");
+    button.setAttribute("aria-pressed", "true");
+}
+
 async function registerWash() {
     const button = document.getElementById("registerWashButton");
     const message = document.getElementById("washMessage");
