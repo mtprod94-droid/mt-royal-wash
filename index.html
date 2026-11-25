@@ -1116,15 +1116,49 @@ button:disabled {
 
         <nav class="sidebar-menu">
 
-            <button class="active">Tableau de bord</button>
-            <button>Enregistrer un lavage</button>
-            <button>Véhicules</button>
-            <button>Employés</button>
-            <button>Recettes</button>
-            <button>Dépenses</button>
-            <button>Historique</button>
+    <button class="active" type="button"
+        id="adminDashboardTab"
+        onclick="showAdminTab('dashboard')">
+        Tableau de bord
+    </button>
 
-        </nav>
+    <button type="button"
+        id="adminNewWashTab"
+        onclick="showAdminTab('newWash')">
+        Enregistrer un lavage
+    </button>
+
+    <button type="button"
+        id="adminVehiclesTab"
+        onclick="showAdminTab('vehicles')">
+        Véhicules
+    </button>
+
+    <button type="button"
+        id="adminEmployeesTab"
+        onclick="showAdminTab('employees')">
+        Employés
+    </button>
+
+    <button type="button"
+        id="adminRevenueTab"
+        onclick="showAdminTab('revenue')">
+        Recettes
+    </button>
+
+    <button type="button"
+        id="adminExpensesTab"
+        onclick="showAdminTab('expenses')">
+        Dépenses
+    </button>
+
+    <button type="button"
+        id="adminHistoryTab"
+        onclick="showAdminTab('history')">
+        Historique
+    </button>
+
+</nav>
 
         <button class="logout-button" onclick="logout()">
             SE DÉCONNECTER
@@ -1150,7 +1184,7 @@ button:disabled {
         </header>
 
         <!-- STATISTICS -->
-        <section class="stats-grid">
+        <section class="stats-grid" id="adminDashboardView">
 
             <div class="stat-card">
                 <span>RECETTES DU JOUR</span>
@@ -1175,17 +1209,132 @@ button:disabled {
         </section>
 
         <!-- CONTENT -->
-        <section class="dashboard-content">
+        <section class="dashboard-content" id="adminWelcomeView">
 
-            <h2>Bienvenue chez MT ROYAL WASH</h2>
+    <h2>Bienvenue chez MT ROYAL WASH</h2>
 
-            <p>
-                Gérez vos lavages, vos employés,
-                vos recettes et vos dépenses depuis
-                un seul espace.
-            </p>
+    <p>
+        Gérez vos lavages, vos employés,
+        vos recettes et vos dépenses depuis
+        un seul espace.
+    </p>
 
-        </section>
+</section>
+
+<!-- ADMIN: NOUVEAU LAVAGE -->
+<section class="dashboard-content hidden" id="adminNewWashView">
+
+    <h2>Enregistrer un lavage</h2>
+
+    <p>
+        Enregistrez un nouveau lavage pour un véhicule.
+    </p>
+
+    <label for="adminVehicleType">Type de véhicule</label>
+
+    <select id="adminVehicleType">
+        <option value="">Choisir un véhicule</option>
+        <option value="moto">Moto – 500 FCFA</option>
+        <option value="small_car">Petite voiture – 2 000 FCFA</option>
+        <option value="suv">SUV / 4x4 – 2 500 FCFA</option>
+    </select>
+
+    <label for="adminPaymentMethod">Mode de paiement</label>
+
+    <select id="adminPaymentMethod">
+        <option value="">Choisir le paiement</option>
+        <option value="cash">Espèces</option>
+        <option value="tmoney">TMoney</option>
+        <option value="flooz">Flooz</option>
+    </select>
+
+    <button type="button" id="adminRegisterWashButton"
+        onclick="adminRegisterWash()">
+        ENREGISTRER LE LAVAGE
+    </button>
+
+    <p id="adminWashMessage" aria-live="polite"></p>
+
+</section>
+
+<!-- ADMIN: VEHICULES -->
+<section class="dashboard-content hidden" id="adminVehiclesView">
+
+    <h2>Gestion des véhicules</h2>
+
+    <p>
+        Consultez les véhicules enregistrés
+        et leur historique de lavage.
+    </p>
+
+    <div id="adminVehiclesList">
+        <p>Chargement des véhicules...</p>
+    </div>
+
+</section>
+
+<!-- ADMIN: EMPLOYES -->
+<section class="dashboard-content hidden" id="adminEmployeesView">
+
+    <h2>Gestion des employés</h2>
+
+    <p>
+        Gérez les comptes et les activités de vos employés.
+    </p>
+
+    <div id="adminEmployeesList">
+        <p>Chargement des employés...</p>
+    </div>
+
+</section>
+
+<!-- ADMIN: RECETTES -->
+<section class="dashboard-content hidden" id="adminRevenueView">
+
+    <h2>Gestion des recettes</h2>
+
+    <p>
+        Consultez les recettes de MT ROYAL WASH
+        et les différents modes de paiement.
+    </p>
+
+    <div id="adminRevenueList">
+        <p>Chargement des recettes...</p>
+    </div>
+
+</section>
+
+<!-- ADMIN: DEPENSES -->
+<section class="dashboard-content hidden" id="adminExpensesView">
+
+    <h2>Gestion des dépenses</h2>
+
+    <p>
+        Enregistrez et consultez les dépenses
+        de MT ROYAL WASH.
+    </p>
+
+    <div id="adminExpensesList">
+        <p>Chargement des dépenses...</p>
+    </div>
+
+</section>
+
+<!-- ADMIN: HISTORIQUE -->
+<section class="dashboard-content hidden" id="adminHistoryView">
+
+    <h2>Historique général</h2>
+
+    <p>
+        Consultez l'ensemble des lavages
+        et des transactions de MT ROYAL WASH.
+    </p>
+
+    <div id="adminHistoryList">
+        <p>Chargement de l'historique...</p>
+    </div>
+
+</section>
 
     </main>
 
@@ -1651,6 +1800,47 @@ payment.textContent =
         console.error("Historique:", error);
         historyList.textContent = "Impossible de charger l'historique.";
     }
+}
+
+function showAdminTab(tab) {
+    const views = {
+        dashboard: [
+            "adminDashboardView",
+            "adminWelcomeView"
+        ],
+        newWash: ["adminNewWashView"],
+        vehicles: ["adminVehiclesView"],
+        employees: ["adminEmployeesView"],
+        revenue: ["adminRevenueView"],
+        expenses: ["adminExpensesView"],
+        history: ["adminHistoryView"]
+    };
+
+    const tabs = {
+        dashboard: "adminDashboardTab",
+        newWash: "adminNewWashTab",
+        vehicles: "adminVehiclesTab",
+        employees: "adminEmployeesTab",
+        revenue: "adminRevenueTab",
+        expenses: "adminExpensesTab",
+        history: "adminHistoryTab"
+    };
+
+    Object.values(views).flat().forEach((id) => {
+        document.getElementById(id).classList.add("hidden");
+    });
+
+    Object.values(tabs).forEach((id) => {
+        document.getElementById(id).classList.remove("active");
+    });
+
+    if (!views[tab]) return;
+
+    views[tab].forEach((id) => {
+        document.getElementById(id).classList.remove("hidden");
+    });
+
+    document.getElementById(tabs[tab]).classList.add("active");
 }
 
 function logout() {
