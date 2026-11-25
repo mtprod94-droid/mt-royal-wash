@@ -1489,6 +1489,9 @@ const EMPLOYEE_HISTORY_URL =
 const ADMIN_DASHBOARD_URL = 
 "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/admin-dashboard";
 
+const LIST_USERS_URL = 
+"https://cgilxwdxiakfriroixih.supabase.co/functions/v1/list-users";
+
 const message = document.getElementById("message");
 let currentSession = null;
 // =====================================
@@ -1845,6 +1848,54 @@ async function loadAdminDashboard() {
 
     } catch (error) {
         console.error("Admin dashboard error:", error);
+    }
+}
+
+async function loadAdminEmployees() {
+    const container = document.getElementById("adminEmployeesList");
+
+    container.textContent = "Chargement des employés...";
+
+    try {
+        const response = await fetch(LIST_USERS_URL, {
+            method: "GET"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Impossible de charger les employés.");
+        }
+
+        const users = Array.isArray(data.users) ? data.users : [];
+
+        container.replaceChildren();
+
+        if (users.length === 0) {
+            container.textContent = "Aucun employé actif pour le moment.";
+            return;
+        }
+
+        users.forEach((user) => {
+            const card = document.createElement("div");
+            card.className = "history-item";
+
+            const name = document.createElement("strong");
+            name.textContent = user.full_name || "Sans nom";
+
+            const username = document.createElement("p");
+            username.textContent = "Identifiant : " + (user.username || "Non défini");
+
+            const status = document.createElement("span");
+            status.textContent = "Actif";
+
+            card.append(name, username, status);
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error("Admin employees error:", error);
+        container.textContent = "Erreur lors du chargement des employés.";
     }
 }
 
