@@ -1595,6 +1595,12 @@ async function loadEmployeeHistory() {
         });
 
         const data = await response.json();
+        
+        document.getElementById("employeeDailyWashes").textContent =
+    data.stats?.dailyWashes ?? 0;
+
+document.getElementById("employeeDailyRevenue").textContent =
+    `${Number(data.stats?.dailyRevenue ?? 0).toLocaleString("fr-FR")} FCFA`;
 
         if (!response.ok || !data.success) {
             throw new Error(data.error || "Erreur de chargement.");
