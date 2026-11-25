@@ -1240,10 +1240,20 @@ async function login(username, password, button, buttonText) {
         });
         const data = await response.json();
         if (!response.ok || !data.access_token) {
-            throw new Error(
-                data.error || "Identifiants incorrects."
-            );
-        }
+    throw new Error(
+        data.error || "Identifiants incorrects."
+    );
+}
+
+if (!data.user || !data.user.role) {
+    throw new Error("Rôle utilisateur introuvable.");
+}
+
+if (data.user.role !== "admin") {
+    throw new Error(
+        "L'espace employé est en cours de préparation."
+    );
+}
         currentSession = data;
         document.getElementById("loginCard")
             .classList.add("hidden");
