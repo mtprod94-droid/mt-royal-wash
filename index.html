@@ -1349,19 +1349,35 @@ if (!data.user || !data.user.role) {
     throw new Error("Rôle utilisateur introuvable.");
 }
 
-if (data.user.role !== "admin") {
-    throw new Error(
-        "L'espace employé est en cours de préparation."
-    );
+if (!["admin", "employee"].includes(data.user.role)) {
+    throw new Error("Rôle utilisateur non autorisé.");
 }
         currentSession = data;
-        document.getElementById("loginCard")
-            .classList.add("hidden");
-        document.getElementById("dashboard")
-            .classList.remove("hidden");
-        document.getElementById("welcomeUser")
-            .textContent =
-            "Utilisateur : " + data.user.username;
+
+document.getElementById("loginCard")
+    .classList.add("hidden");
+
+document.getElementById("dashboard")
+    .classList.add("hidden");
+
+document.getElementById("employeeDashboard")
+    .classList.add("hidden");
+
+if (data.user.role === "admin") {
+    document.getElementById("dashboard")
+        .classList.remove("hidden");
+
+    document.getElementById("welcomeUser")
+        .textContent =
+        "Utilisateur : " + data.user.username;
+
+} else if (data.user.role === "employee") {
+    document.getElementById("employeeDashboard")
+        .classList.remove("hidden");
+
+    document.getElementById("employeeWelcomeUser")
+        .textContent = data.user.username;
+}
         document.getElementById("adminPassword").value = "";
         document.getElementById("employeePassword").value = "";
     } catch (error) {
@@ -1409,14 +1425,21 @@ document.getElementById("employeeLoginButton")
 // =====================================
 function logout() {
     currentSession = null;
+    
     document.getElementById("dashboard")
         .classList.add("hidden");
+        
+        document.getElementById("employeeDashboard")
+    .classList.add("hidden");
+    
     document.getElementById("loginCard")
         .classList.remove("hidden");
+        
     document.getElementById("adminUsername").value = "";
     document.getElementById("adminPassword").value = "";
     document.getElementById("employeeUsername").selectedIndex = 0;
     document.getElementById("employeePassword").value = "";
+    
     message.textContent = "";
 }
 
