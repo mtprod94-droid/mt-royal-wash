@@ -1913,19 +1913,22 @@ async function loadAdminVehicles() {
     }
 
     try {
-        const response = await fetch(ADMIN_VEHICLES_URL, {
-            method: "GET",
+        const response = await fetch(ADMIN_DASHBOARD_URL, {
+            method: "POST",
             headers: {
-                "apikey": SUPABASE_ANON_KEY,
+                "Content-Type": "application/json",
                 "Authorization": `Bearer ${currentSession.access_token}`
-            }
+            },
+            body: JSON.stringify({})
         });
 
-        const vehicles = await response.json();
+        const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(vehicles.message || "Erreur de chargement.");
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || "Erreur de chargement.");
         }
+
+        const vehicles = data.vehicles;
 
         container.replaceChildren();
 
