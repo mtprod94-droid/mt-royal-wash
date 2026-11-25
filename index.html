@@ -1186,27 +1186,27 @@ button:disabled {
         <!-- STATISTICS -->
         <section class="stats-grid" id="adminDashboardView">
 
-            <div class="stat-card">
-                <span>RECETTES DU JOUR</span>
-                <h2>0 FCFA</h2>
-            </div>
+    <div class="stat-card">
+        <span>RECETTES DU JOUR</span>
+        <h2 id="adminDailyRevenue">0 FCFA</h2>
+    </div>
 
-            <div class="stat-card">
-                <span>LAVAGES DU JOUR</span>
-                <h2>0</h2>
-            </div>
+    <div class="stat-card">
+        <span>LAVAGES DU JOUR</span>
+        <h2 id="adminDailyWashes">0</h2>
+    </div>
 
-            <div class="stat-card">
-                <span>DÉPENSES DU JOUR</span>
-                <h2>0 FCFA</h2>
-            </div>
+    <div class="stat-card">
+        <span>DÉPENSES DU JOUR</span>
+        <h2 id="adminDailyExpenses">0 FCFA</h2>
+    </div>
 
-            <div class="stat-card">
-                <span>BÉNÉFICE DU JOUR</span>
-                <h2>0 FCFA</h2>
-            </div>
+    <div class="stat-card">
+        <span>BÉNÉFICE DU JOUR</span>
+        <h2 id="adminDailyProfit">0 FCFA</h2>
+    </div>
 
-        </section>
+</section>
 
         <!-- CONTENT -->
         <section class="dashboard-content" id="adminWelcomeView">
@@ -1483,7 +1483,11 @@ const USERS_URL =
 const CREATE_EMPLOYEE_URL = 
 "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/create-employee";
 
-const EMPLOYEE_HISTORY_URL = "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/employee-history";
+const EMPLOYEE_HISTORY_URL = 
+"https://cgilxwdxiakfriroixih.supabase.co/functions/v1/employee-history";
+
+const ADMIN_DASHBOARD_URL = 
+"https://cgilxwdxiakfriroixih.supabase.co/functions/v1/admin-dashboard";
 
 const message = document.getElementById("message");
 let currentSession = null;
@@ -1802,6 +1806,48 @@ payment.textContent =
     }
 }
 
+async function loadAdminDashboard() {
+    const revenueElement = document.getElementById("adminDailyRevenue");
+    const washesElement = document.getElementById("adminDailyWashes");
+    const expensesElement = document.getElementById("adminDailyExpenses");
+    const profitElement = document.getElementById("adminDailyProfit");
+
+    if (!currentSession || !currentSession.access_token) {
+        console.error("Admin session missing.");
+        return;
+    }
+
+    try {
+        const response = await fetch(ADMIN_DASHBOARD_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${currentSession.access_token}`
+            },
+            body: JSON.stringify({})
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || "Dashboard loading failed.");
+        }
+
+        const stats = data.stats;
+
+        const formatFCFA = (value) =>
+            Number(value || 0).toLocaleString("fr-FR") + " FCFA";
+
+        revenueElement.textContent = formatFCFA(stats.dailyRevenue);
+        washesElement.textContent = Number(stats.dailyWashes || 0);
+        expensesElement.textContent = formatFCFA(stats.dailyExpenses);
+        profitElement.textContent = formatFCFA(stats.dailyProfit);
+
+    } catch (error) {
+        console.error("Admin dashboard error:", error);
+    }
+}
+
 function showAdminTab(tab) {
     const views = {
         dashboard: [
@@ -1826,6 +1872,8 @@ function showAdminTab(tab) {
         history: "adminHistoryTab"
     };
 
+    if (!views[tab]) return;
+
     Object.values(views).flat().forEach((id) => {
         document.getElementById(id).classList.add("hidden");
     });
@@ -1834,13 +1882,15 @@ function showAdminTab(tab) {
         document.getElementById(id).classList.remove("active");
     });
 
-    if (!views[tab]) return;
-
     views[tab].forEach((id) => {
         document.getElementById(id).classList.remove("hidden");
     });
 
     document.getElementById(tabs[tab]).classList.add("active");
+
+    if (tab === "dashboard") {
+        loadAdminDashboard();
+    }
 }
 
 function logout() {
