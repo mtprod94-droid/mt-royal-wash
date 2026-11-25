@@ -2193,6 +2193,75 @@ async function loadAdminExpenses() {
     }
 }
 
+async function adminRegisterExpense() {
+    const categoryInput = document.getElementById("expenseCategory");
+    const descriptionInput = document.getElementById("expenseDescription");
+    const amountInput = document.getElementById("expenseAmount");
+    const message = document.getElementById("expenseMessage");
+
+    const category = categoryInput.value.trim();
+    const description = descriptionInput.value.trim();
+    const amount = Number(amountInput.value);
+
+    if (!category) {
+        message.textContent = "Veuillez choisir une catégorie.";
+        return;
+    }
+
+    if (!Number.isSafeInteger(amount) || amount <= 0) {
+        message.textContent = "Veuillez saisir un montant valide.";
+        return;
+    }
+
+    if (!currentSession?.access_token) {
+        message.textContent = "Session expirée. Veuillez vous reconnecter.";
+        return;
+    }
+
+    const button = document.querySelector(
+        '#adminExpensesView button[onclick="adminRegisterExpense()"]'
+    );
+
+    button.disabled = true;
+    message.textContent = "Enregistrement en cours...";
+
+    try {
+        const response = await fetch(ADMIN_EXPENSES_URL, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${currentSession.access_token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                category,
+                description,
+                amount
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || "Erreur d'enregistrement");
+        }
+
+        message.textContent = "Dépense enregistrée avec succès.";
+
+        categoryInput.value = "";
+        descriptionInput.value = "";
+        amountInput.value = "";
+
+        await loadAdminExpenses();
+
+    } catch (error) {
+        console.error("Expense registration error:", error);
+        message.textContent =
+            error.message || "Erreur lors de l'enregistrement.";
+    } finally {
+        button.disabled = false;
+    }
+}
+
 function showAdminTab(tab) {
     const views = {
         dashboard: [
