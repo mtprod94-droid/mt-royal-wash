@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eaf6ff">
+  <title>MT ROYAL WASH | Employés</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      color: #18324f;
+      background: #edf6fc;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0;
+      color: #1769aa;
+      font-size: 22px;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      color: #7892a8;
+      font-size: 12px;
+    }
+
+    button {
+      min-height: 42px;
+      padding: 10px 15px;
+      border: 0;
+      border-radius: 9px;
+      background: #1769aa;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .logout { background: #d9534f; }
+    .back { background: #6d879b; }
+
+    .panel {
+      margin-bottom: 20px;
+      padding: 20px;
+      border: 1px solid #dceaf4;
+      border-radius: 15px;
+      background: white;
+      box-shadow: 0 5px 18px rgba(30,90,130,.06);
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 18px;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      min-height: 49px;
+      margin-bottom: 12px;
+      padding: 12px;
+      border: 1px solid #d5e5f1;
+      border-radius: 9px;
+      background: #fbfdff;
+      font-size: 16px;
+    }
+
+    .employee {
+      padding: 15px 0;
+      border-bottom: 1px solid #e6eef4;
+    }
+
+    .employee:last-child {
+      border-bottom: 0;
+    }
+
+    .employee-name {
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .employee-info {
+      margin-top: 6px;
+      color: #7892a8;
+      font-size: 12px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .status {
+      display: inline-block;
+      margin: 8px 0;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .active {
+      color: #16834a;
+      background: #e4f7ec;
+    }
+
+    .inactive {
+      color: #b04444;
+      background: #fdeaea;
+    }
+
+    .employee button {
+      min-height: 38px;
+      margin-top: 5px;
+      font-size: 12px;
+    }
+
+    .deactivate { background: #d9534f; }
+    .activate { background: #16834a; }
+
+    #message {
+      margin: 12px 0;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .muted {
+      color: #7892a8;
+      font-size: 13px;
+    }
+
+    @media (min-width: 700px) {
+      body {
+        max-width: 850px;
+        margin: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div>
+      <h1>MT ROYAL WASH</h1>
+      <div class="subtitle">GESTION DES EMPLOYÉS</div>
+    </div>
+
+    <button class="logout" id="logoutButton">
+      Déconnexion
+    </button>
+  </header>
+
+  <p>
+    <button class="back" id="backButton">
+      ← Retour au Dashboard
+    </button>
+  </p>
+
+  <div id="message" role="status" aria-live="polite"></div>
+
+  <section class="panel">
+    <h2>Ajouter un employé</h2>
+
+    <form id="employeeForm">
+
+      <input
+        id="fullName"
+        type="text"
+        placeholder="Nom complet"
+        maxlength="100"
+        required
+      >
+
+      <input
+        id="username"
+        type="text"
+        placeholder="Nom d'utilisateur"
+        minlength="3"
+        maxlength="30"
+        required
+      >
+
+      <input
+        id="phone"
+        type="tel"
+        placeholder="Numéro de téléphone"
+        maxlength="20"
+        required
+      >
+
+      <input
+        id="password"
+        type="password"
+        placeholder="Mot de passe (8 caractères minimum)"
+        minlength="8"
+        maxlength="72"
+        autocomplete="new-password"
+        required
+      >
+
+      <button type="submit" id="createButton">
+        CRÉER L'EMPLOYÉ
+      </button>
+
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Liste des employés</h2>
+
+    <button id="refreshButton">
+      Actualiser la liste
+    </button>
+
+    <div id="employeeList" style="margin-top:15px">
+      Chargement des employés...
+    </div>
+  </section>
+
+  <script>
+    const BASE_URL =
+      "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/";
+
+    const savedSession =
+      sessionStorage.getItem("mtRoyalWashAdminSession");
+
+    let loginData = null;
+
+    try {
+      loginData = JSON.parse(savedSession);
+    } catch {
+      loginData = null;
+    }
+
+    if (
+      !loginData ||
+      !loginData.access_token ||
+      !loginData.user ||
+      loginData.user.role !== "admin"
+    ) {
+      window.location.replace("index.html");
+    }
+
+    const message = document.getElementById("message");
+    const employeeList = document.getElementById("employeeList");
+
+    function showMessage(text, success = false) {
+      message.textContent = text;
+      message.style.color = success ? "#16834a" : "#b04444";
+    }
+
+    async function apiRequest(functionName, method = "GET", body = null) {
+      const options = {
+        method,
+        headers: {
+          "Authorization": "Bearer " + loginData.access_token
+        }
+      };
+
+      if (body !== null) {
+        options.headers["Content-Type"] = "application/json";
+        options.body = JSON.stringify(body);
+      }
+
+      const response = await fetch(BASE_URL + functionName, options);
+
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error("Réponse invalide du serveur.");
+      }
+
+      if (response.status === 401 || response.status === 403) {
+        sessionStorage.removeItem("mtRoyalWashAdminSession");
+        window.location.replace("index.html");
+        throw new Error("Session expirée ou accès refusé.");
+      }
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.error || "Une erreur est survenue.");
+      }
+
+      return data;
+    }
+
+    function createEmployeeCard(employee) {
+      const box = document.createElement("div");
+      box.className = "employee";
+
+      const name = document.createElement("div");
+      name.className = "employee-name";
+      name.textContent = employee.full_name || "Sans nom";
+
+      const info = document.createElement("div");
+      info.className = "employee-info";
+      info.textContent =
+        "Utilisateur : " + employee.username +
+        " | Téléphone : " + (employee.phone || "Non renseigné");
+
+      const status = document.createElement("div");
+      status.className =
+        "status " + (employee.is_active ? "active" : "inactive");
+
+      status.textContent =
+        employee.is_active ? "ACTIF" : "INACTIF";
+
+      const button = document.createElement("button");
+
+      button.className =
+        employee.is_active ? "deactivate" : "activate";
+
+      button.textContent =
+        employee.is_active ? "Désactiver" : "Activer";
+
+      button.addEventListener("click", function() {
+        changeStatus(employee);
+      });
+
+      box.append(name, info, status, document.createElement("br"), button);
+
+      return box;
+    }
+
+    async function loadEmployees() {
+      employeeList.textContent = "Chargement...";
+
+      try {
+        const data = await apiRequest("admin-list-employees");
+
+        employeeList.replaceChildren();
+
+        const employees = data.users || [];
+
+        if (employees.length === 0) {
+          employeeList.textContent = "Aucun employé enregistré.";
+          return;
+        }
+
+        employees.forEach(function(employee) {
+          employeeList.appendChild(createEmployeeCard(employee));
+        });
+
+      } catch (error) {
+        employeeList.textContent = "";
+        showMessage(error.message);
+      }
+    }
+
+    async function changeStatus(employee) {
+      const nextStatus = !employee.is_active;
+
+      const action = nextStatus ? "activer" : "désactiver";
+
+      if (!confirm(
+        "Voulez-vous vraiment " + action +
+        " le compte de " + employee.full_name + " ?"
+      )) {
+        return;
+      }
+
+      try {
+        showMessage("Modification du statut...");
+
+        const data = await apiRequest(
+          "manage-employee-status",
+          "POST",
+          {
+            employee_id: employee.id,
+            is_active: nextStatus
+          }
+        );
+
+        showMessage(data.message || "Statut modifié.", true);
+
+        await loadEmployees();
+
+      } catch (error) {
+        showMessage(error.message);
+      }
+    }
+
+    document.getElementById("employeeForm").addEventListener(
+      "submit",
+      async function(event) {
+        event.preventDefault();
+
+        const button = document.getElementById("createButton");
+
+        const employee = {
+          full_name: document.getElementById("fullName").value.trim(),
+          username: document.getElementById("username").value.trim(),
+          phone: document.getElementById("phone").value.trim(),
+          password: document.getElementById("password").value
+        };
+
+        button.disabled = true;
+        button.textContent = "CRÉATION...";
+
+        try {
+          const data = await apiRequest(
+            "create-employee",
+            "POST",
+            employee
+          );
+
+          showMessage(data.message || "Employé créé avec succès.", true);
+
+          event.target.reset();
+
+          await loadEmployees();
+
+        } catch (error) {
+          showMessage(error.message);
+        } finally {
+          button.disabled = false;
+          button.textContent = "CRÉER L'EMPLOYÉ";
+        }
+      }
+    );
+
+    document.getElementById("refreshButton").addEventListener(
+      "click",
+      loadEmployees
+    );
+
+    document.getElementById("logoutButton").addEventListener(
+      "click",
+      function() {
+        sessionStorage.removeItem("mtRoyalWashAdminSession");
+        window.location.replace("index.html");
+      }
+    );
+
+    document.getElementById("backButton").addEventListener(
+      "click",
+      function() {
+        window.location.href = "dashboard.html";
+      }
+    );
+
+    if (loginData && loginData.access_token) {
+      loadEmployees();
+    }
+  </script>
+
+</body>
+</html>
