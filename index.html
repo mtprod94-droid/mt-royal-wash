@@ -2358,12 +2358,15 @@ async function loadAdminEmployees() {
             name.textContent = user.full_name || "Sans nom";
 
             const username = document.createElement("p");
-            username.textContent = "Identifiant : " + (user.username || "Non défini");
+username.textContent = "Identifiant : " + (user.username || "Non défini");
 
-            const status = document.createElement("span");
-            status.textContent = "Actif";
+const phone = document.createElement("p");
+phone.textContent = "Téléphone : " + (user.phone || "Non renseigné");
 
-            card.append(name, username, status);
+const status = document.createElement("span");
+status.textContent = "Actif";
+
+card.append(name, username, phone, status);
             container.appendChild(card);
         });
 
