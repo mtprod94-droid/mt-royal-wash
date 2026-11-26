@@ -11,7 +11,7 @@
 
     body {
       margin: 0;
-      padding: 20px;
+      padding: 18px;
       font-family: Arial, sans-serif;
       background: #eef7fd;
       color: #17324a;
@@ -21,14 +21,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
+      gap: 10px;
+      margin-bottom: 22px;
     }
 
     h1 {
-      color: #07549a;
-      font-size: 21px;
       margin: 0;
+      color: #07549a;
+      font-size: 20px;
     }
 
     .subtitle {
@@ -37,19 +37,30 @@
       margin-top: 5px;
     }
 
+    button, select {
+      font-size: 16px;
+    }
+
     button {
       border: 0;
-      border-radius: 9px;
-      padding: 11px 14px;
+      border-radius: 10px;
+      padding: 13px;
       background: #0877c9;
       color: white;
       font-weight: bold;
       cursor: pointer;
     }
 
+    button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
     .logout {
-      background: #e9f2f8;
+      background: #e1edf6;
       color: #07549a;
+      padding: 10px 12px;
+      font-size: 13px;
     }
 
     .grid {
@@ -61,7 +72,7 @@
     .card {
       background: white;
       border-radius: 15px;
-      padding: 18px;
+      padding: 17px;
       box-shadow: 0 5px 20px rgba(14,83,130,.06);
     }
 
@@ -71,18 +82,78 @@
     }
 
     .value {
-      margin-top: 10px;
+      margin-top: 9px;
       color: #07549a;
-      font-size: 24px;
+      font-size: 23px;
       font-weight: 800;
       overflow-wrap: anywhere;
     }
 
-    .section { margin-top: 25px; }
+    .section {
+      margin-top: 24px;
+    }
 
     h2 {
       font-size: 17px;
       color: #07549a;
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 17px 0 8px;
+    }
+
+    select {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #d6e3ed;
+      border-radius: 10px;
+      background: white;
+      color: #17324a;
+    }
+
+    .price-box {
+      margin-top: 18px;
+      padding: 18px;
+      background: #eaf6ff;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .price {
+      font-size: 27px;
+      color: #07549a;
+      font-weight: 800;
+      margin-top: 7px;
+    }
+
+    #registerButton {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    #message {
+      display: none;
+      margin-top: 15px;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .success {
+      display: block !important;
+      color: #176b39;
+      background: #e8f8ed;
+    }
+
+    .error {
+      display: block !important;
+      color: #a32626;
+      background: #fff0f0;
     }
 
     .transaction {
@@ -94,7 +165,9 @@
       font-size: 14px;
     }
 
-    .transaction:last-child { border-bottom: 0; }
+    .transaction:last-child {
+      border-bottom: 0;
+    }
 
     .muted {
       color: #71869a;
@@ -102,14 +175,8 @@
       margin-top: 5px;
     }
 
-    .message {
-      padding: 14px;
-      color: #71869a;
-      font-size: 14px;
-    }
-
-    @media (max-width: 380px) {
-      body { padding: 14px; }
+    @media(max-width: 380px) {
+      body { padding: 13px; }
       .value { font-size: 20px; }
     }
   </style>
@@ -122,7 +189,9 @@
     <h1>MT ROYAL WASH</h1>
     <div class="subtitle">Espace Employé</div>
   </div>
-  <button class="logout" id="logoutButton">Déconnexion</button>
+  <button class="logout" id="logoutButton">
+    Déconnexion
+  </button>
 </header>
 
 <div class="grid">
@@ -138,9 +207,43 @@
 </div>
 
 <section class="section">
+  <h2>Enregistrer un lavage</h2>
+
+  <div class="card">
+    <label for="vehicle">Type de véhicule</label>
+
+    <select id="vehicle">
+      <option value="moto">Moto – 500 FCFA</option>
+      <option value="small_car">Petite voiture – 2 000 FCFA</option>
+      <option value="suv">SUV / 4x4 – 2 500 FCFA</option>
+    </select>
+
+    <div class="price-box">
+      <div class="label">Prix à payer</div>
+      <div class="price" id="price">500 FCFA</div>
+    </div>
+
+    <label for="payment">Mode de paiement</label>
+
+    <select id="payment">
+      <option value="cash">Cash</option>
+      <option value="tmoney">TMoney</option>
+      <option value="flooz">Flooz</option>
+    </select>
+
+    <button id="registerButton">
+      Enregistrer le lavage
+    </button>
+
+    <div id="message" role="alert"></div>
+  </div>
+</section>
+
+<section class="section">
   <h2>Mes dernières transactions</h2>
+
   <div class="card" id="history">
-    <div class="message">Chargement...</div>
+    Chargement...
   </div>
 </section>
 
@@ -150,6 +253,9 @@
 
   const HISTORY_URL =
     SUPABASE_URL + "/functions/v1/employee-history";
+
+  const REGISTER_URL =
+    SUPABASE_URL + "/functions/v1/register-wash";
 
   const SESSION_KEY = "mtRoyalWashEmployeeSession";
 
@@ -172,25 +278,39 @@
     window.location.replace("index.html");
   }
 
+  const vehicle = document.getElementById("vehicle");
+  const payment = document.getElementById("payment");
+  const priceDisplay = document.getElementById("price");
+  const registerButton =
+    document.getElementById("registerButton");
+  const message = document.getElementById("message");
+
+  const prices = {
+    moto: 500,
+    small_car: 2000,
+    suv: 2500
+  };
+
+  function formatMoney(value) {
+    return Number(value || 0).toLocaleString("fr-FR")
+      + " FCFA";
+  }
+
+  function showMessage(text, type) {
+    message.textContent = text;
+    message.className = type;
+  }
+
+  vehicle.addEventListener("change", () => {
+    priceDisplay.textContent =
+      formatMoney(prices[vehicle.value]);
+  });
+
   document.getElementById("logoutButton")
     .addEventListener("click", () => {
       sessionStorage.removeItem(SESSION_KEY);
       window.location.replace("index.html");
     });
-
-  function formatMoney(value) {
-    return Number(value || 0).toLocaleString("fr-FR") + " FCFA";
-  }
-
-  function formatDate(value) {
-    return new Date(value).toLocaleString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  }
 
   async function loadHistory() {
     const historyBox = document.getElementById("history");
@@ -221,32 +341,33 @@
 
       historyBox.replaceChildren();
 
-      if (!Array.isArray(data.history) || data.history.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "message";
-        empty.textContent =
+      if (!Array.isArray(data.history) ||
+          data.history.length === 0) {
+        historyBox.textContent =
           "Aucune transaction pour le moment.";
-
-        historyBox.appendChild(empty);
         return;
       }
 
-      data.history.forEach((item) => {
+      data.history.forEach(item => {
         const row = document.createElement("div");
         row.className = "transaction";
 
         const left = document.createElement("div");
 
-        const vehicle = document.createElement("strong");
-        vehicle.textContent = item.vehicle_type || "Véhicule";
+        const title = document.createElement("strong");
+        title.textContent = item.vehicle_type || "Véhicule";
 
         const details = document.createElement("div");
         details.className = "muted";
-        details.textContent =
-          formatDate(item.created_at) +
-          " · " + (item.payment_method || "Paiement");
 
-        left.append(vehicle, details);
+        const date = item.created_at
+          ? new Date(item.created_at).toLocaleString("fr-FR")
+          : "";
+
+        details.textContent =
+          date + " · " + (item.payment_method || "Paiement");
+
+        left.append(title, details);
 
         const amount = document.createElement("strong");
         amount.textContent = formatMoney(item.amount);
@@ -260,6 +381,52 @@
         error.message || "Erreur de chargement.";
     }
   }
+
+  registerButton.addEventListener("click", async () => {
+    message.className = "";
+    message.textContent = "";
+
+    registerButton.disabled = true;
+    registerButton.textContent = "Enregistrement...";
+
+    try {
+      const response = await fetch(REGISTER_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + session.access_token
+        },
+        body: JSON.stringify({
+          vehicle_type: vehicle.value,
+          payment_method: payment.value
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.success !== true) {
+        throw new Error(
+          data.error || "Impossible d'enregistrer le lavage."
+        );
+      }
+
+      showMessage(
+        "Lavage enregistré avec succès !",
+        "success"
+      );
+
+      await loadHistory();
+
+    } catch (error) {
+      showMessage(
+        error.message || "Une erreur est survenue.",
+        "error"
+      );
+    } finally {
+      registerButton.disabled = false;
+      registerButton.textContent = "Enregistrer le lavage";
+    }
+  });
 
   if (session && session.access_token) {
     loadHistory();
