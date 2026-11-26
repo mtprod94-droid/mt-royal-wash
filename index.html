@@ -1491,8 +1491,66 @@ button:disabled {
         Gérez les comptes et les activités de vos employés.
     </p>
 
-    <div id="adminEmployeesList">
-        <p>Chargement des employés...</p>
+    <!-- CREATION D'UN EMPLOYE -->
+
+    <div class="admin-employee-form">
+
+        <h3>Créer un nouvel employé</h3>
+
+        <label for="newEmployeeName">Nom complet</label>
+        <input
+            type="text"
+            id="newEmployeeName"
+            placeholder="Nom et prénom"
+            autocomplete="off"
+        >
+
+        <label for="newEmployeePhone">Numéro de téléphone</label>
+        <input
+            type="tel"
+            id="newEmployeePhone"
+            placeholder="Exemple : +228 90 00 00 00"
+            autocomplete="tel"
+        >
+
+        <label for="newEmployeeUsername">Nom d'utilisateur</label>
+        <input
+            type="text"
+            id="newEmployeeUsername"
+            placeholder="Exemple : MT-EMP-001"
+            autocomplete="off"
+        >
+
+        <label for="newEmployeePassword">Mot de passe provisoire</label>
+        <input
+            type="password"
+            id="newEmployeePassword"
+            placeholder="Créer un mot de passe"
+            autocomplete="new-password"
+        >
+
+        <button
+            type="button"
+            id="createEmployeeButton"
+            onclick="createEmployee()"
+        >
+            CRÉER LE COMPTE
+        </button>
+
+        <p id="createEmployeeMessage" aria-live="polite"></p>
+
+    </div>
+
+    <!-- LISTE DES EMPLOYES -->
+
+    <div class="admin-employee-list-section">
+
+        <h3>Liste des employés</h3>
+
+        <div id="adminEmployeesList">
+            <p>Chargement des employés...</p>
+        </div>
+
     </div>
 
 </section>
@@ -2312,6 +2370,68 @@ async function loadAdminEmployees() {
     } catch (error) {
         console.error("Admin employees error:", error);
         container.textContent = "Erreur lors du chargement des employés.";
+    }
+}
+
+async function createEmployee() {
+    const fullName = document.getElementById("newEmployeeName").value.trim();
+    const phone = document.getElementById("newEmployeePhone").value.trim();
+    const username = document.getElementById("newEmployeeUsername").value.trim();
+    const password = document.getElementById("newEmployeePassword").value;
+    const button = document.getElementById("createEmployeeButton");
+    const message = document.getElementById("createEmployeeMessage");
+
+    if (!currentSession?.access_token) {
+        message.textContent = "Session administrateur invalide.";
+        return;
+    }
+
+    if (!fullName || !phone || !username || !password) {
+        message.textContent = "Veuillez remplir tous les champs.";
+        return;
+    }
+
+    button.disabled = true;
+    message.textContent = "Création du compte en cours...";
+
+    try {
+        const response = await fetch(
+            "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/create-employee",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${currentSession.access_token}`
+                },
+                body: JSON.stringify({
+                    full_name: fullName,
+                    phone: phone,
+                    username: username,
+                    password: password
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || data.error) {
+            throw new Error(data.error || "Impossible de créer le compte.");
+        }
+
+        message.textContent = "Compte employé créé avec succès !";
+
+        document.getElementById("newEmployeeName").value = "";
+        document.getElementById("newEmployeePhone").value = "";
+        document.getElementById("newEmployeeUsername").value = "";
+        document.getElementById("newEmployeePassword").value = "";
+
+        await loadAdminEmployees();
+
+    } catch (error) {
+        console.error("Create employee error:", error);
+        message.textContent = error.message;
+    } finally {
+        button.disabled = false;
     }
 }
 
