@@ -1055,6 +1055,65 @@ button:disabled {
     }
 }
 
+/* ADMIN - EXPENSE CATEGORY CARDS */
+
+#adminExpensesView .wash-selection-title {
+    display: block;
+    margin-bottom: 13px;
+    color: #18324f;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+}
+
+#adminExpensesView .wash-choice-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+#adminExpensesView .wash-choice {
+    min-height: 90px;
+    padding: 15px 10px;
+    border: 1px solid #dce8f5;
+    border-radius: 14px;
+    background: #f8fbff;
+    color: #18324f;
+    box-shadow: none;
+    letter-spacing: 0;
+    text-align: center;
+    transition: .2s ease;
+}
+
+#adminExpensesView .wash-choice strong {
+    display: block;
+    margin-top: 7px;
+    font-size: 13px;
+}
+
+#adminExpensesView .wash-choice.selected {
+    border: 2px solid #287eae;
+    background: #eaf5ff;
+    color: #1769aa;
+}
+
+#adminExpensesView .wash-choice:focus-visible {
+    outline: 3px solid rgba(40,126,174,.25);
+    outline-offset: 3px;
+}
+
+#adminExpensesView .wash-hidden-select {
+    display: none;
+}
+
+@media (max-width: 380px) {
+    #adminExpensesView .wash-choice-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 </style>
 </head>
 
@@ -1581,9 +1640,12 @@ button:disabled {
         de MT ROYAL WASH.
     </p>
 
+    <!-- CATÉGORIE -->
+
     <div class="form-group">
-        <label for="expenseCategory">Catégorie</label>
-        <select id="expenseCategory">
+        <label class="wash-selection-title">Catégorie de dépense</label>
+
+        <select id="expenseCategory" class="wash-hidden-select">
             <option value="">Choisir une catégorie</option>
             <option value="Produits de lavage">Produits de lavage</option>
             <option value="Électricité">Électricité</option>
@@ -1593,7 +1655,55 @@ button:disabled {
             <option value="Salaires">Salaires</option>
             <option value="Autres">Autres</option>
         </select>
+
+        <div class="wash-choice-grid">
+
+            <button type="button" class="wash-choice"
+                onclick="selectWashOption('expenseCategory', 'Produits de lavage', this)">
+                🧴
+                <strong>Produits de lavage</strong>
+            </button>
+
+            <button type="button" class="wash-choice"
+                onclick="selectWashOption('expenseCategory', 'Électricité', this)">
+                ⚡
+                <strong>Électricité</strong>
+            </button>
+
+            <button type="button" class="wash-choice"
+                onclick="selectWashOption('expenseCategory', 'Eau', this)">
+                💧
+                <strong>Eau</strong>
+            </button>
+
+            <button type="button" class="wash-choice"
+                onclick="selectWashOption('expenseCategory', 'Entretien', this)">
+                🔧
+                <strong>Entretien</strong>
+            </button>
+
+            <button type="button" class="wash-choice"
+                onclick="selectWashOption('expenseCategory', 'Transport', this)">
+                🚚
+                <strong>Transport</strong>
+            </button>
+
+            <button type="button" class="wash-choice"
+                onclick="selectWashOption('expenseCategory', 'Salaires', this)">
+                👥
+                <strong>Salaires</strong>
+            </button>
+
+            <button type="button" class="wash-choice"
+                onclick="selectWashOption('expenseCategory', 'Autres', this)">
+                📋
+                <strong>Autres</strong>
+            </button>
+
+        </div>
     </div>
+
+    <!-- DESCRIPTION -->
 
     <div class="form-group">
         <label for="expenseDescription">Description</label>
@@ -1603,6 +1713,8 @@ button:disabled {
             placeholder="Description de la dépense"
         >
     </div>
+
+    <!-- MONTANT -->
 
     <div class="form-group">
         <label for="expenseAmount">Montant (FCFA)</label>
@@ -1619,7 +1731,7 @@ button:disabled {
         Enregistrer la dépense
     </button>
 
-    <div id="expenseMessage"></div>
+    <div id="expenseMessage" aria-live="polite"></div>
 
     <hr>
 
