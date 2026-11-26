@@ -1988,6 +1988,9 @@ const ADMIN_EXPENSES_URL =
 const LIST_USERS_URL = 
 "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/list-users";
 
+const ADMIN_LIST_EMPLOYEES_URL =
+"https://cgilxwdxiakfriroixih.supabase.co/functions/v1/admin-list-employees";
+
 const ADMIN_VEHICLES_URL = 
 "https://cgilxwdxiakfriroixih.supabase.co/rest/v1/vehicles?select=id,vehicle_type,price,created_at,employee_id&order=created_at.desc";
 
@@ -2443,8 +2446,11 @@ async function loadAdminEmployees() {
     container.textContent = "Chargement des employés...";
 
     try {
-        const response = await fetch(LIST_USERS_URL, {
-            method: "GET"
+        const response = await fetch(ADMIN_LIST_EMPLOYEES_URL, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + currentSession.access_token
+            }
         });
 
         const data = await response.json();
@@ -2458,7 +2464,7 @@ async function loadAdminEmployees() {
         container.replaceChildren();
 
         if (users.length === 0) {
-            container.textContent = "Aucun employé actif pour le moment.";
+            container.textContent = "Aucun employé pour le moment.";
             return;
         }
 
@@ -2470,21 +2476,75 @@ async function loadAdminEmployees() {
             name.textContent = user.full_name || "Sans nom";
 
             const username = document.createElement("p");
-username.textContent = "Identifiant : " + (user.username || "Non défini");
+            username.textContent = "Identifiant : " + (user.username || "Non défini");
 
-const phone = document.createElement("p");
-phone.textContent = "Téléphone : " + (user.phone || "Non renseigné");
+            const phone = document.createElement("p");
+            phone.textContent = "Téléphone : " + (user.phone || "Non renseigné");
 
-const status = document.createElement("span");
-status.textContent = "Actif";
+            const status = document.createElement("p");
+            status.textContent = user.is_active ? "Statut : Actif" : "Statut : Désactivé";
 
-card.append(name, username, phone, status);
+            const button = document.createElement("button");
+            button.type = "button";
+            button.textContent = user.is_active ? "Désactiver" : "Activer";
+            button.className = user.is_active ? "danger-button" : "primary-button";
+
+            button.addEventListener("click", () => {
+                toggleEmployeeStatus(user.id, !user.is_active);
+            });
+
+            card.append(name, username, phone, status, button);
             container.appendChild(card);
         });
 
     } catch (error) {
         console.error("Admin employees error:", error);
         container.textContent = "Erreur lors du chargement des employés.";
+    }
+}
+
+async function toggleEmployeeStatus(employeeId, isActive) {
+    const action = isActive ? "aktivieren" : "deaktivieren";
+
+    const confirmed = confirm(
+        "Möchtest du diesen Mitarbeiter wirklich " + action + "?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/manage-employee-status",
+            {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + currentSession.access_token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    employee_id: employeeId,
+                    is_active: isActive
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.error || "Impossible de modifier le statut."
+            );
+        }
+
+        alert(data.message || "Statut modifié avec succès.");
+
+        await loadAdminEmployees();
+
+    } catch (error) {
+        console.error("Employee status error:", error);
+        alert(error.message || "Erreur lors de la modification du statut.");
     }
 }
 
