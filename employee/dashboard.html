@@ -2,182 +2,302 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0877c9">
-  <title>MT ROYAL WASH – Espace Employé</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#eef6ff">
+
+  <title>MT ROYAL WASH - Espace Employé</title>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
-      padding: 18px;
       font-family: Arial, sans-serif;
-      background: #eef7fd;
-      color: #17324a;
+      background: linear-gradient(145deg, #eaf4ff, #ffffff);
+      color: #17324d;
+      min-height: 100vh;
     }
 
     header {
+      background: white;
+      padding: 18px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 22px;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid #dce9f5;
     }
 
-    h1 {
-      margin: 0;
-      color: #07549a;
+    .brand {
       font-size: 20px;
+      font-weight: 800;
+      color: #1261a0;
     }
 
     .subtitle {
+      font-size: 12px;
       color: #71869a;
-      font-size: 13px;
-      margin-top: 5px;
-    }
-
-    button, select {
-      font-size: 16px;
+      margin-top: 4px;
     }
 
     button {
-      border: 0;
-      border-radius: 10px;
-      padding: 13px;
-      background: #0877c9;
-      color: white;
-      font-weight: bold;
+      font-family: inherit;
       cursor: pointer;
     }
 
-    button:disabled {
-      opacity: .6;
-      cursor: wait;
-    }
-
     .logout {
-      background: #e1edf6;
-      color: #07549a;
-      padding: 10px 12px;
-      font-size: 13px;
+      border: 0;
+      border-radius: 9px;
+      padding: 11px 14px;
+      background: #edf4fa;
+      color: #31516e;
+      font-weight: bold;
     }
 
-    .grid {
+    main {
+      width: min(100% - 28px, 650px);
+      margin: 24px auto;
+    }
+
+    .panel {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 18px;
+      border: 1px solid #e1edf7;
+      box-shadow: 0 5px 20px rgba(30, 80, 120, 0.06);
+    }
+
+    h1 {
+      font-size: 23px;
+      margin: 0 0 7px;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin: 0 0 16px;
+    }
+
+    .muted {
+      color: #71869a;
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .stats {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
     }
 
-    .card {
-      background: white;
-      border-radius: 15px;
-      padding: 17px;
-      box-shadow: 0 5px 20px rgba(14,83,130,.06);
+    .stat {
+      background: #f2f8ff;
+      border: 1px solid #dfedfa;
+      border-radius: 12px;
+      padding: 16px;
     }
 
-    .label {
-      color: #71869a;
+    .stat-label {
+      color: #688198;
       font-size: 13px;
+      margin-bottom: 9px;
     }
 
-    .value {
-      margin-top: 9px;
-      color: #07549a;
+    .stat-value {
       font-size: 23px;
       font-weight: 800;
-      overflow-wrap: anywhere;
+      color: #1769aa;
     }
 
-    .section {
-      margin-top: 24px;
-    }
-
-    h2 {
-      font-size: 17px;
-      color: #07549a;
-      margin-bottom: 14px;
-    }
-
-    label {
-      display: block;
+    .section-label {
       font-size: 14px;
       font-weight: bold;
-      margin: 17px 0 8px;
+      margin-bottom: 12px;
     }
 
-    select {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid #d6e3ed;
-      border-radius: 10px;
-      background: white;
-      color: #17324a;
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .choice {
+      min-width: 0;
+      min-height: 112px;
+      border: 2px solid #e0ebf5;
+      background: #fbfdff;
+      color: #294761;
+      border-radius: 13px;
+      padding: 13px 7px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 7px;
+      text-align: center;
+      transition: border-color .15s, background .15s;
+    }
+
+    .choice.selected {
+      border-color: #1672b9;
+      background: #eaf5ff;
+      color: #1261a0;
+    }
+
+    .choice:focus-visible {
+      outline: 3px solid #8bc4f4;
+      outline-offset: 2px;
+    }
+
+    .choice-icon {
+      font-size: 29px;
+    }
+
+    .choice-name {
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .choice-price {
+      font-size: 12px;
+      color: #688198;
+    }
+
+    .payment-choices {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .payment-choices .choice {
+      min-height: 85px;
     }
 
     .price-box {
-      margin-top: 18px;
-      padding: 18px;
-      background: #eaf6ff;
+      background: #edf7ff;
+      border: 1px solid #d6eafa;
       border-radius: 12px;
-      text-align: center;
+      padding: 15px;
+      margin-top: 17px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
     }
 
-    .price {
-      font-size: 27px;
-      color: #07549a;
-      font-weight: 800;
-      margin-top: 7px;
+    .price-box span {
+      font-size: 14px;
+      color: #55738d;
     }
 
-    #registerButton {
+    .price-box strong {
+      color: #1261a0;
+      font-size: 22px;
+      white-space: nowrap;
+    }
+
+    .register {
       width: 100%;
-      margin-top: 20px;
+      border: 0;
+      border-radius: 11px;
+      padding: 16px;
+      margin-top: 17px;
+      background: #1672b9;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
     }
 
-    #message {
+    .register:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .message {
       display: none;
-      margin-top: 15px;
       padding: 13px;
       border-radius: 10px;
+      margin-top: 14px;
       font-size: 14px;
       line-height: 1.5;
+      overflow-wrap: anywhere;
     }
 
     .success {
-      display: block !important;
-      color: #176b39;
-      background: #e8f8ed;
+      display: block;
+      background: #e5f8ed;
+      color: #176d3b;
     }
 
     .error {
-      display: block !important;
-      color: #a32626;
+      display: block;
       background: #fff0f0;
+      color: #b42f2f;
     }
 
     .transaction {
       padding: 14px 0;
-      border-bottom: 1px solid #e7eff5;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      font-size: 14px;
+      border-bottom: 1px solid #e8eff5;
     }
 
     .transaction:last-child {
       border-bottom: 0;
     }
 
-    .muted {
+    .transaction-name {
+      font-weight: bold;
+      font-size: 15px;
+      margin-bottom: 5px;
+    }
+
+    .transaction-info {
       color: #71869a;
-      font-size: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .transaction-amount {
+      color: #1769aa;
+      font-weight: bold;
       margin-top: 5px;
     }
 
-    @media(max-width: 380px) {
-      body { padding: 13px; }
-      .value { font-size: 20px; }
+    .empty {
+      color: #71869a;
+      text-align: center;
+      padding: 20px 0;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      color: #8497a8;
+      font-size: 12px;
+      padding: 25px 10px;
+    }
+
+    @media (max-width: 380px) {
+      .choice {
+        padding: 11px 4px;
+      }
+
+      .choice-name {
+        font-size: 12px;
+      }
+
+      .choice-icon {
+        font-size: 25px;
+      }
+
+      .stat-value {
+        font-size: 20px;
+      }
+
+      .panel {
+        padding: 16px;
+      }
     }
   </style>
 </head>
@@ -186,86 +306,136 @@
 
 <header>
   <div>
-    <h1>MT ROYAL WASH</h1>
-    <div class="subtitle">Espace Employé</div>
+    <div class="brand">MT ROYAL WASH</div>
+    <div class="subtitle">ESPACE EMPLOYÉ</div>
   </div>
+
   <button class="logout" id="logoutButton">
     Déconnexion
   </button>
 </header>
 
-<div class="grid">
-  <div class="card">
-    <div class="label">Lavages aujourd'hui</div>
-    <div class="value" id="dailyWashes">—</div>
-  </div>
+<main>
 
-  <div class="card">
-    <div class="label">Recette du jour</div>
-    <div class="value" id="dailyRevenue">—</div>
-  </div>
-</div>
+  <section class="panel">
+    <h1>Bonjour 👋</h1>
+    <p class="muted">Bienvenue dans votre espace de travail.</p>
+  </section>
 
-<section class="section">
-  <h2>Enregistrer un lavage</h2>
+  <section class="panel">
+    <h2>📊 Mon activité aujourd'hui</h2>
 
-  <div class="card">
-    <label for="vehicle">Type de véhicule</label>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Véhicules lavés</div>
+        <div class="stat-value" id="dailyWashes">0</div>
+      </div>
 
-    <select id="vehicle">
-      <option value="moto">Moto – 500 FCFA</option>
-      <option value="small_car">Petite voiture – 2 000 FCFA</option>
-      <option value="suv">SUV / 4x4 – 2 500 FCFA</option>
-    </select>
+      <div class="stat">
+        <div class="stat-label">Chiffre d'affaires</div>
+        <div class="stat-value" id="dailyRevenue">0 FCFA</div>
+      </div>
+    </div>
+  </section>
 
-    <div class="price-box">
-      <div class="label">Prix à payer</div>
-      <div class="price" id="price">500 FCFA</div>
+  <section class="panel">
+    <h2>🚗 Enregistrer un lavage</h2>
+
+    <div class="section-label">
+      1. Choisir le véhicule
     </div>
 
-    <label for="payment">Mode de paiement</label>
+    <div class="choices" id="vehicleChoices">
 
-    <select id="payment">
-      <option value="cash">Cash</option>
-      <option value="tmoney">TMoney</option>
-      <option value="flooz">Flooz</option>
-    </select>
+      <button type="button" class="choice"
+        data-value="moto" data-price="500"
+        aria-pressed="false">
+        <span class="choice-icon">🏍️</span>
+        <span class="choice-name">Moto</span>
+        <span class="choice-price">500 FCFA</span>
+      </button>
 
-    <button id="registerButton">
+      <button type="button" class="choice"
+        data-value="small_car" data-price="2000"
+        aria-pressed="false">
+        <span class="choice-icon">🚘</span>
+        <span class="choice-name">Petite voiture</span>
+        <span class="choice-price">2 000 FCFA</span>
+      </button>
+
+      <button type="button" class="choice"
+        data-value="suv" data-price="2500"
+        aria-pressed="false">
+        <span class="choice-icon">🚙</span>
+        <span class="choice-name">SUV / 4x4</span>
+        <span class="choice-price">2 500 FCFA</span>
+      </button>
+
+    </div>
+
+    <div class="section-label" style="margin-top:24px">
+      2. Choisir le mode de paiement
+    </div>
+
+    <div class="payment-choices" id="paymentChoices">
+
+      <button type="button" class="choice"
+        data-value="cash" aria-pressed="false">
+        <span class="choice-icon">💵</span>
+        <span class="choice-name">Cash</span>
+      </button>
+
+      <button type="button" class="choice"
+        data-value="tmoney" aria-pressed="false">
+        <span class="choice-icon">📱</span>
+        <span class="choice-name">TMoney</span>
+      </button>
+
+      <button type="button" class="choice"
+        data-value="flooz" aria-pressed="false">
+        <span class="choice-icon">📲</span>
+        <span class="choice-name">Flooz</span>
+      </button>
+
+    </div>
+
+    <div class="price-box">
+      <span>Montant à encaisser</span>
+      <strong id="price">0 FCFA</strong>
+    </div>
+
+    <button class="register" id="registerButton" type="button">
       Enregistrer le lavage
     </button>
 
-    <div id="message" role="alert"></div>
-  </div>
-</section>
+    <div id="message" class="message" role="status" aria-live="polite"></div>
+  </section>
 
-<section class="section">
-  <h2>Mes dernières transactions</h2>
+  <section class="panel">
+    <h2>📋 Mes dernières transactions</h2>
 
-  <div class="card" id="history">
-    Chargement...
-  </div>
-</section>
+    <div id="history">
+      <div class="empty">Chargement de l'historique...</div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  BY MAISON TRAORÉ · Votre véhicule mérite le meilleur.
+</footer>
 
 <script>
-  const SUPABASE_URL =
-    "https://cgilxwdxiakfriroixih.supabase.co";
-
-  const HISTORY_URL =
-    SUPABASE_URL + "/functions/v1/employee-history";
-
-  const REGISTER_URL =
-    SUPABASE_URL + "/functions/v1/register-wash";
+  const SUPABASE_FUNCTIONS =
+    "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/";
 
   const SESSION_KEY = "mtRoyalWashEmployeeSession";
 
-  let session = null;
+  let session;
 
   try {
-    session = JSON.parse(
-      sessionStorage.getItem(SESSION_KEY) || "null"
-    );
-  } catch {
+    session = JSON.parse(sessionStorage.getItem(SESSION_KEY));
+  } catch (error) {
     session = null;
   }
 
@@ -275,162 +445,217 @@
     !session.user ||
     session.user.role !== "employee"
   ) {
-    window.location.replace("index.html");
+    window.location.href = "index.html";
   }
 
-  const vehicle = document.getElementById("vehicle");
-  const payment = document.getElementById("payment");
-  const priceDisplay = document.getElementById("price");
-  const registerButton =
-    document.getElementById("registerButton");
-  const message = document.getElementById("message");
+  let selectedVehicle = null;
+  let selectedPayment = null;
+  let selectedPrice = 0;
 
-  const prices = {
-    moto: 500,
-    small_car: 2000,
-    suv: 2500
-  };
+  const priceElement = document.getElementById("price");
+  const messageElement = document.getElementById("message");
+  const registerButton = document.getElementById("registerButton");
 
-  function formatMoney(value) {
-    return Number(value || 0).toLocaleString("fr-FR")
-      + " FCFA";
+  function formatMoney(amount) {
+    return Number(amount || 0).toLocaleString("fr-FR") + " FCFA";
   }
 
-  function showMessage(text, type) {
-    message.textContent = text;
-    message.className = type;
-  }
+  function selectOption(containerId, button, callback) {
+    const container = document.getElementById(containerId);
 
-  vehicle.addEventListener("change", () => {
-    priceDisplay.textContent =
-      formatMoney(prices[vehicle.value]);
-  });
-
-  document.getElementById("logoutButton")
-    .addEventListener("click", () => {
-      sessionStorage.removeItem(SESSION_KEY);
-      window.location.replace("index.html");
+    container.querySelectorAll(".choice").forEach(item => {
+      item.classList.remove("selected");
+      item.setAttribute("aria-pressed", "false");
     });
 
+    button.classList.add("selected");
+    button.setAttribute("aria-pressed", "true");
+
+    callback();
+  }
+
+  document.querySelectorAll("#vehicleChoices .choice").forEach(button => {
+    button.addEventListener("click", function() {
+      selectOption("vehicleChoices", this, () => {
+        selectedVehicle = this.dataset.value;
+        selectedPrice = Number(this.dataset.price);
+        priceElement.textContent = formatMoney(selectedPrice);
+      });
+    });
+  });
+
+  document.querySelectorAll("#paymentChoices .choice").forEach(button => {
+    button.addEventListener("click", function() {
+      selectOption("paymentChoices", this, () => {
+        selectedPayment = this.dataset.value;
+      });
+    });
+  });
+
+  function showMessage(message, type) {
+    messageElement.textContent = message;
+    messageElement.className = "message " + type;
+  }
+
   async function loadHistory() {
-    const historyBox = document.getElementById("history");
+    const historyElement = document.getElementById("history");
 
     try {
-      const response = await fetch(HISTORY_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + session.access_token
-        },
-        body: JSON.stringify({})
-      });
+      const response = await fetch(
+        SUPABASE_FUNCTIONS + "employee-history",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + session.access_token
+          },
+          body: JSON.stringify({})
+        }
+      );
 
       const data = await response.json();
 
-      if (!response.ok || data.success !== true) {
-        throw new Error(
-          data.error || "Chargement impossible."
-        );
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Impossible de charger l'historique.");
       }
 
       document.getElementById("dailyWashes").textContent =
-        data.stats.dailyWashes ?? 0;
+        data.stats.dailyWashes || 0;
 
       document.getElementById("dailyRevenue").textContent =
-        formatMoney(data.stats.dailyRevenue);
+        formatMoney(data.stats.dailyRevenue || 0);
 
-      historyBox.replaceChildren();
-
-      if (!Array.isArray(data.history) ||
-          data.history.length === 0) {
-        historyBox.textContent =
-          "Aucune transaction pour le moment.";
+      if (!data.history || data.history.length === 0) {
+        historyElement.innerHTML =
+          '<div class="empty">Aucune transaction pour le moment.</div>';
         return;
       }
 
+      historyElement.innerHTML = "";
+
       data.history.forEach(item => {
-        const row = document.createElement("div");
-        row.className = "transaction";
+        const transaction = document.createElement("div");
+        transaction.className = "transaction";
 
-        const left = document.createElement("div");
+        const name = document.createElement("div");
+        name.className = "transaction-name";
 
-        const title = document.createElement("strong");
-        title.textContent = item.vehicle_type || "Véhicule";
+        const vehicleNames = {
+          moto: "Moto",
+          small_car: "Petite voiture",
+          suv: "SUV / 4x4"
+        };
 
-        const details = document.createElement("div");
-        details.className = "muted";
+        name.textContent =
+          vehicleNames[item.vehicle_type] || item.vehicle_type;
 
-        const date = item.created_at
-          ? new Date(item.created_at).toLocaleString("fr-FR")
-          : "";
+        const info = document.createElement("div");
+        info.className = "transaction-info";
 
-        details.textContent =
-          date + " · " + (item.payment_method || "Paiement");
+        const date = new Date(item.created_at);
 
-        left.append(title, details);
+        const paymentNames = {
+          cash: "Cash",
+          tmoney: "TMoney",
+          flooz: "Flooz"
+        };
 
-        const amount = document.createElement("strong");
+        info.textContent =
+          date.toLocaleString("fr-FR", {
+            timeZone: "Africa/Lome"
+          }) +
+          " · " +
+          (paymentNames[item.payment_method] || item.payment_method);
+
+        const amount = document.createElement("div");
+        amount.className = "transaction-amount";
         amount.textContent = formatMoney(item.amount);
 
-        row.append(left, amount);
-        historyBox.appendChild(row);
+        transaction.appendChild(name);
+        transaction.appendChild(info);
+        transaction.appendChild(amount);
+
+        historyElement.appendChild(transaction);
       });
 
     } catch (error) {
-      historyBox.textContent =
-        error.message || "Erreur de chargement.";
+      historyElement.innerHTML = "";
+      const errorText = document.createElement("div");
+      errorText.className = "empty";
+      errorText.textContent = error.message;
+      historyElement.appendChild(errorText);
     }
   }
 
-  registerButton.addEventListener("click", async () => {
-    message.className = "";
-    message.textContent = "";
+  registerButton.addEventListener("click", async function() {
+    messageElement.className = "message";
+    messageElement.textContent = "";
+
+    if (!selectedVehicle) {
+      showMessage("Veuillez choisir un véhicule.", "error");
+      return;
+    }
+
+    if (!selectedPayment) {
+      showMessage("Veuillez choisir un mode de paiement.", "error");
+      return;
+    }
 
     registerButton.disabled = true;
-    registerButton.textContent = "Enregistrement...";
+    registerButton.textContent = "Enregistrement en cours...";
 
     try {
-      const response = await fetch(REGISTER_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + session.access_token
-        },
-        body: JSON.stringify({
-          vehicle_type: vehicle.value,
-          payment_method: payment.value
-        })
-      });
+      const response = await fetch(
+        SUPABASE_FUNCTIONS + "register-wash",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + session.access_token
+          },
+          body: JSON.stringify({
+            vehicle_type: selectedVehicle,
+            payment_method: selectedPayment
+          })
+        }
+      );
 
       const data = await response.json();
 
-      if (!response.ok || data.success !== true) {
-        throw new Error(
-          data.error || "Impossible d'enregistrer le lavage."
-        );
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Erreur lors de l'enregistrement.");
       }
 
-      showMessage(
-        "Lavage enregistré avec succès !",
-        "success"
-      );
+      showMessage("Lavage enregistré avec succès !", "success");
+
+      selectedVehicle = null;
+      selectedPayment = null;
+      selectedPrice = 0;
+
+      document.querySelectorAll(".choice").forEach(button => {
+        button.classList.remove("selected");
+        button.setAttribute("aria-pressed", "false");
+      });
+
+      priceElement.textContent = "0 FCFA";
 
       await loadHistory();
 
     } catch (error) {
-      showMessage(
-        error.message || "Une erreur est survenue.",
-        "error"
-      );
+      showMessage(error.message, "error");
+
     } finally {
       registerButton.disabled = false;
       registerButton.textContent = "Enregistrer le lavage";
     }
   });
 
-  if (session && session.access_token) {
-    loadHistory();
-  }
+  document.getElementById("logoutButton").addEventListener("click", function() {
+    sessionStorage.removeItem(SESSION_KEY);
+    window.location.href = "index.html";
+  });
+
+  loadHistory();
 </script>
 
 </body>
