@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eaf6ff">
+  <title>MT ROYAL WASH | ADMIN</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: Arial, sans-serif;
+      color: #18324f;
+      background: linear-gradient(145deg, #ffffff, #d9efff, #eef8ff);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      padding: 35px 25px;
+      text-align: center;
+      background: rgba(255,255,255,.94);
+      border: 1px solid #dcecf7;
+      border-radius: 22px;
+      box-shadow: 0 15px 45px rgba(30,90,130,.13);
+    }
+
+    .symbol {
+      width: 75px;
+      height: 75px;
+      margin: 0 auto 20px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #e5f4ff;
+      font-size: 35px;
+    }
+
+    h1 {
+      margin: 0;
+      color: #1769aa;
+      font-size: 25px;
+      letter-spacing: 1px;
+    }
+
+    .brand {
+      margin-top: 9px;
+      color: #7795ad;
+      font-size: 11px;
+      letter-spacing: 3px;
+    }
+
+    h2 {
+      margin: 30px 0 8px;
+      font-size: 21px;
+    }
+
+    .subtitle {
+      margin-bottom: 25px;
+      color: #8296ab;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      min-height: 54px;
+      margin-bottom: 15px;
+      padding: 14px;
+      border: 1px solid #d5e5f1;
+      border-radius: 11px;
+      background: #fbfdff;
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: 2px solid #9bd3f5;
+      border-color: #398dc1;
+    }
+
+    button {
+      width: 100%;
+      min-height: 54px;
+      border: 0;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #287eae, #124c76);
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    #message {
+      min-height: 24px;
+      margin-top: 17px;
+      color: #c04444;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .footer {
+      margin-top: 28px;
+      color: #8ba2b5;
+      font-size: 10px;
+      letter-spacing: 1px;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="login-card">
+
+    <div class="symbol">🚘</div>
+
+    <h1>MT ROYAL WASH</h1>
+    <div class="brand">BY MAISON TRAORÉ</div>
+
+    <h2>Administration</h2>
+
+    <p class="subtitle">
+      Connectez-vous pour accéder à votre espace administrateur.
+    </p>
+
+    <form id="loginForm">
+
+      <input
+        type="text"
+        id="username"
+        placeholder="Nom d'utilisateur"
+        autocomplete="username"
+        required
+      >
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Mot de passe"
+        autocomplete="current-password"
+        required
+      >
+
+      <button type="submit" id="loginButton">
+        CONNEXION ADMINISTRATEUR
+      </button>
+
+    </form>
+
+    <div id="message" role="status" aria-live="polite"></div>
+
+    <div class="footer">
+      VOTRE VÉHICULE MÉRITE LE MEILLEUR.
+      <br>
+      © 2026 MT ROYAL WASH
+    </div>
+
+  </main>
+
+  <script>
+    const LOGIN_URL =
+      "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/username-login";
+
+    const form = document.getElementById("loginForm");
+    const button = document.getElementById("loginButton");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const username =
+        document.getElementById("username").value.trim();
+
+      const password =
+        document.getElementById("password").value;
+
+      if (!username || !password) {
+        message.textContent = "Veuillez remplir tous les champs.";
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "CONNEXION...";
+      message.textContent = "";
+
+      try {
+        const response = await fetch(LOGIN_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.access_token) {
+          throw new Error(
+            data.error || "Identifiants incorrects."
+          );
+        }
+
+        if (!data.user || data.user.role !== "admin") {
+          throw new Error(
+            "Accès refusé. Ce compte n'est pas administrateur."
+          );
+        }
+
+        sessionStorage.setItem(
+          "mtRoyalWashAdminSession",
+          JSON.stringify(data)
+        );
+
+        message.style.color = "#16834a";
+        message.textContent = "Connexion réussie. Accès administrateur confirmé.";
+
+        window.location.href = "dashboard.html";
+
+      } catch (error) {
+        message.style.color = "#c04444";
+        message.textContent =
+          error.message || "Erreur de connexion.";
+      } finally {
+        button.disabled = false;
+        button.textContent = "CONNEXION ADMINISTRATEUR";
+      }
+    });
+  </script>
+
+</body>
+</html>
