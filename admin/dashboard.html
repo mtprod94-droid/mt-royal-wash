@@ -48,8 +48,23 @@
       cursor: pointer;
     }
 
-    .logout {
-      background: #d9534f;
+    .logout { background: #d9534f; }
+
+    .menu {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .menu button {
+      min-height: 65px;
+      text-align: left;
+      line-height: 1.4;
+      background: white;
+      color: #1769aa;
+      border: 1px solid #dceaf4;
+      box-shadow: 0 5px 18px rgba(30,90,130,.06);
     }
 
     .cards {
@@ -63,7 +78,7 @@
       border: 1px solid #dceaf4;
       border-radius: 15px;
       background: white;
-      box-shadow: 0 5px 18px rgba(30, 90, 130, .06);
+      box-shadow: 0 5px 18px rgba(30,90,130,.06);
     }
 
     .label {
@@ -79,9 +94,7 @@
       overflow-wrap: anywhere;
     }
 
-    .panel {
-      margin-top: 22px;
-    }
+    .panel { margin-top: 22px; }
 
     h2 {
       margin: 0 0 15px;
@@ -101,7 +114,9 @@
     }
 
     @media (max-width: 360px) {
-      .cards { grid-template-columns: 1fr; }
+      .cards, .menu {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -118,6 +133,28 @@
       Déconnexion
     </button>
   </header>
+
+  <nav class="menu">
+    <button id="employeesButton">
+      👥 Gestion des employés
+    </button>
+
+    <button type="button" disabled>
+      📋 Historique – Bientôt disponible
+    </button>
+
+    <button type="button" disabled>
+      💰 Dépenses – Bientôt disponible
+    </button>
+
+    <button type="button" disabled>
+      📊 Rapports – Bientôt disponible
+    </button>
+
+    <button type="button" disabled>
+      ⚙️ Paramètres – Bientôt disponible
+    </button>
+  </nav>
 
   <section class="cards">
 
@@ -243,6 +280,13 @@
           "Erreur : " + (error.message || "Connexion impossible.");
       }
     }
+
+    document.getElementById("employeesButton").addEventListener(
+      "click",
+      function() {
+        window.location.href = "employees.html";
+      }
+    );
 
     document.getElementById("logoutButton").addEventListener(
       "click",
