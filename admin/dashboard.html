@@ -162,6 +162,10 @@
       <div class="label">Chiffre d'affaires du jour</div>
       <div class="value" id="revenue">—</div>
     </div>
+    
+    <div class="label">Cash: <span id="cash">0 FCFA</span></div>
+<div class="label">TMoney: <span id="tmoney">0 FCFA</span></div>
+<div class="label">Flooz: <span id="flooz">0 FCFA</span></div>
 
     <div class="card">
       <div class="label">Véhicules lavés aujourd'hui</div>
@@ -244,6 +248,17 @@
 
         document.getElementById("revenue").textContent =
           formatCFA(stats.dailyRevenue);
+          
+          const paymentTotals = stats.paymentTotals || {};
+
+document.getElementById("cash").textContent =
+  formatCFA(paymentTotals.cash);
+
+document.getElementById("tmoney").textContent =
+  formatCFA(paymentTotals.tmoney);
+
+document.getElementById("flooz").textContent =
+  formatCFA(paymentTotals.flooz);
 
         document.getElementById("washes").textContent =
           Number(stats.dailyWashes || 0);
