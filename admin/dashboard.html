@@ -269,6 +269,9 @@ h2 {
     }
 }
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body>
@@ -366,38 +369,6 @@ h2 {
         <div class="value" id="profit">—</div>
     </div>
 
-</section>
-
-    <div class="card primary">
-        <div class="label">
-            Chiffre d'affaires
-        </div>
-        <div class="value" id="revenue">—</div>
-    </div>
-
-    <div class="card">
-        <div class="label">
-            🚗 Véhicules lavés
-        </div>
-        <div class="value" id="washes">—</div>
-    </div>
-
-    <div class="card">
-        <div class="label">
-            💸 Dépenses du jour
-        </div>
-        <div class="value" id="expenses">—</div>
-    </div>
-
-    <div class="card">
-        <div class="label">
-            📈 Bénéfice du jour
-        </div>
-        <div class="value" id="profit">—</div>
-    </div>
-
-</section>
-
 <!-- PAYMENT METHODS -->
 
 <div class="section-title">
@@ -421,6 +392,21 @@ h2 {
         <div class="value" id="flooz">0 FCFA</div>
     </div>
 
+</section>
+
+<!-- REVENUE CHART -->
+<div class="section-title">
+    📈 Évolution du chiffre d'affaires
+</div>
+
+<section class="card">
+    <div class="label">
+        Chiffre d'affaires des 30 derniers jours
+    </div>
+
+    <div id="revenueChart" style="width:100%; min-height:300px;">
+        Chargement du graphique...
+    </div>
 </section>
 
 <!-- RECENT VEHICLES -->
