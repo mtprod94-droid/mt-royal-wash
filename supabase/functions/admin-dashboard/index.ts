@@ -128,12 +128,21 @@ Deno.serve(async (req) => {
     )
   );
 
-  // Fetch from the earliest required period.
-  // This also covers weeks crossing a month boundary.
-  const queryStart =
-    startOfWeek.getTime() < startOfMonth.getTime()
-      ? startOfWeek
-      : startOfMonth;
+  // Fetch from the earliest required period,
+// including the last 30 days for the revenue chart.
+const thirtyDaysAgo = new Date(
+  startOfDay.getTime() - 29 * 24 * 60 * 60 * 1000
+);
+
+const earliestPeriod =
+  startOfWeek.getTime() < startOfMonth.getTime()
+    ? startOfWeek
+    : startOfMonth;
+
+const queryStart =
+  thirtyDaysAgo.getTime() < earliestPeriod.getTime()
+    ? thirtyDaysAgo
+    : earliestPeriod;
 
   const queryStartISO = queryStart.toISOString();
   const queryEndISO = startOfNextDay.toISOString();
@@ -227,6 +236,26 @@ Deno.serve(async (req) => {
     startOfNextDay
   );
 
+// Calculate daily revenue for the last 30 days
+const dailyRevenueByDay = [];
+
+for (let i = 29; i >= 0; i--) {
+  const dayStart = new Date(
+    startOfDay.getTime() - i * 24 * 60 * 60 * 1000
+  );
+
+  const dayEnd = new Date(
+    dayStart.getTime() + 24 * 60 * 60 * 1000
+  );
+
+  const dayStats = calculateStats(dayStart, dayEnd);
+
+  dailyRevenueByDay.push({
+    date: dayStart.toISOString().slice(0, 10),
+    revenue: dayStats.revenue,
+  });
+}
+
   const weekStats = calculateStats(
     startOfWeek,
     startOfNextWeek
@@ -299,6 +328,7 @@ Deno.serve(async (req) => {
       today: todayStats,
       week: weekStats,
       month: monthStats,
+dailyRevenueByDay,
 
       // Payment methods for today
       paymentTotals,
