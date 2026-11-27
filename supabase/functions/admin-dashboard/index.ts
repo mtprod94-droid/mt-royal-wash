@@ -80,7 +80,7 @@ Deno.serve(async (req) => {
 
   const { data: transactions, error: transactionError } = await supabase
     .from("transactions")
-    .select("amount, created_at")
+    .select("amount, created_at, payment_method")
     .eq("status", "completed")
     .gte("created_at", start)
     .lt("created_at", end);
