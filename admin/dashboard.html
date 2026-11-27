@@ -1,327 +1,534 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#eaf6ff">
-  <title>MT ROYAL WASH | Dashboard Admin</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#edf6fc">
 
-  <style>
-    * { box-sizing: border-box; }
+<title>MT ROYAL WASH | Admin Dashboard</title>
 
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 22px 18px 35px;
+    font-family: Arial, sans-serif;
+    color: #18324f;
+    background: #edf6fc;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+/* HEADER */
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+h1 {
+    margin: 0;
+    color: #1769aa;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.subtitle {
+    margin-top: 6px;
+    color: #7892a8;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+button {
+    border: 0;
+    border-radius: 11px;
+    padding: 13px 17px;
+    color: white;
+    background: #1769aa;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.logout {
+    background: #df5353;
+}
+
+/* SECTION TITLES */
+
+.section-title {
+    margin: 25px 0 13px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #18324f;
+}
+
+/* MENU */
+
+.menu {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.menu button {
+    min-height: 76px;
+    padding: 16px;
+    text-align: left;
+    line-height: 1.4;
+    font-size: 14px;
+    color: #1769aa;
+    background: white;
+    border: 1px solid #dceaf4;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(30,90,130,.05);
+}
+
+.menu button:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+}
+
+/* FINANCIAL CARDS */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.card, .panel {
+    padding: 18px;
+    background: white;
+    border: 1px solid #dceaf4;
+    border-radius: 17px;
+    box-shadow: 0 4px 15px rgba(30,90,130,.05);
+}
+
+.label {
+    color: #7892a8;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.value {
+    margin-top: 12px;
+    color: #1769aa;
+    font-size: 23px;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.card.primary {
+    background: #1769aa;
+    border-color: #1769aa;
+}
+
+.card.primary .label,
+.card.primary .value {
+    color: white;
+}
+
+/* PAYMENT METHODS */
+
+.payments {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.payment-card {
+    padding: 15px 10px;
+    text-align: center;
+    background: white;
+    border: 1px solid #dceaf4;
+    border-radius: 14px;
+}
+
+.payment-card .label {
+    font-size: 12px;
+}
+
+.payment-card .value {
+    font-size: 15px;
+    margin-top: 9px;
+}
+
+/* VEHICLES */
+
+.panel {
+    margin-top: 25px;
+}
+
+h2 {
+    margin: 0 0 17px;
+    font-size: 17px;
+}
+
+#vehicles {
+    color: #627d92;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+#vehicles > div {
+    padding: 12px 0;
+    border-bottom: 1px solid #edf2f6;
+}
+
+#vehicles > div:last-child {
+    border-bottom: 0;
+}
+
+#vehicles strong {
+    color: #1769aa;
+}
+
+/* MESSAGE */
+
+#message {
+    margin-top: 18px;
+    color: #b44;
+    font-size: 13px;
+}
+
+/* RESPONSIVE */
+
+@media (min-width: 700px) {
     body {
-      margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      color: #18324f;
-      background: #edf6fc;
+        padding: 35px;
     }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 25px;
-    }
-
-    h1 {
-      margin: 0;
-      color: #1769aa;
-      font-size: 22px;
-    }
-
-    .subtitle {
-      margin-top: 6px;
-      color: #7892a8;
-      font-size: 12px;
-    }
-
-    button {
-      border: 0;
-      border-radius: 9px;
-      padding: 12px 16px;
-      color: white;
-      background: #1769aa;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .logout { background: #d9534f; }
 
     .menu {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 22px;
-    }
-
-    .menu button {
-      min-height: 65px;
-      text-align: left;
-      line-height: 1.4;
-      background: white;
-      color: #1769aa;
-      border: 1px solid #dceaf4;
-      box-shadow: 0 5px 18px rgba(30,90,130,.06);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .cards {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
-    .card, .panel {
-      padding: 18px;
-      border: 1px solid #dceaf4;
-      border-radius: 15px;
-      background: white;
-      box-shadow: 0 5px 18px rgba(30,90,130,.06);
+    .card {
+        padding: 22px;
+    }
+}
+
+@media (max-width: 380px) {
+    body {
+        padding: 16px 12px 25px;
     }
 
-    .label {
-      color: #7892a8;
-      font-size: 12px;
+    h1 {
+        font-size: 20px;
+    }
+
+    .logout {
+        padding: 11px;
+        font-size: 12px;
     }
 
     .value {
-      margin-top: 10px;
-      color: #1769aa;
-      font-size: 23px;
-      font-weight: bold;
-      overflow-wrap: anywhere;
+        font-size: 19px;
     }
 
-    .panel { margin-top: 22px; }
-
-    h2 {
-      margin: 0 0 15px;
-      font-size: 17px;
+    .payment-card .value {
+        font-size: 13px;
     }
-
-    #vehicles {
-      color: #627d92;
-      font-size: 13px;
-      line-height: 1.8;
-    }
-
-    #message {
-      margin-top: 18px;
-      color: #b44;
-      font-size: 13px;
-    }
-
-    @media (max-width: 360px) {
-      .cards, .menu {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+}
+</style>
 </head>
 
 <body>
 
-  <header>
+<div class="container">
+
+<header>
     <div>
-      <h1>MT ROYAL WASH</h1>
-      <div class="subtitle">ESPACE ADMINISTRATEUR</div>
+        <h1>MT ROYAL WASH</h1>
+        <div class="subtitle">ESPACE ADMINISTRATEUR</div>
     </div>
 
     <button class="logout" id="logoutButton">
-      Déconnexion
+        Déconnexion
     </button>
-  </header>
+</header>
 
-  <nav class="menu">
+<!-- ADMIN MENU -->
+
+<div class="section-title">
+    Administration
+</div>
+
+<nav class="menu">
+
     <button id="employeesButton">
-      👥 Gestion des employés
+        👥 Gestion des employés
     </button>
 
     <button type="button" disabled>
-      📋 Historique – Bientôt disponible
+        📋 Historique – Bientôt disponible
     </button>
 
     <button id="expensesButton" type="button">
-💰 Gestion des dépenses
-</button>
-
-    <button type="button" disabled>
-      📊 Rapports – Bientôt disponible
+        💰 Gestion des dépenses
     </button>
 
     <button type="button" disabled>
-      ⚙️ Paramètres – Bientôt disponible
+        📊 Rapports – Bientôt disponible
     </button>
-  </nav>
 
-  <section class="cards">
+    <button type="button" disabled>
+        ⚙️ Paramètres – Bientôt disponible
+    </button>
 
-    <div class="card">
-      <div class="label">Chiffre d'affaires du jour</div>
-      <div class="value" id="revenue">—</div>
-    </div>
-    
-    <div class="label">Cash: <span id="cash">0 FCFA</span></div>
-<div class="label">TMoney: <span id="tmoney">0 FCFA</span></div>
-<div class="label">Flooz: <span id="flooz">0 FCFA</span></div>
+</nav>
 
-    <div class="card">
-      <div class="label">Véhicules lavés aujourd'hui</div>
-      <div class="value" id="washes">—</div>
-    </div>
+<!-- FINANCIAL OVERVIEW -->
 
-    <div class="card">
-      <div class="label">Dépenses du jour</div>
-      <div class="value" id="expenses">—</div>
-    </div>
+<div class="section-title">
+    📊 Résumé de la journée
+</div>
 
-    <div class="card">
-      <div class="label">Bénéfice du jour</div>
-      <div class="value" id="profit">—</div>
+<section class="cards">
+
+    <div class="card primary">
+        <div class="label">
+            Chiffre d'affaires
+        </div>
+        <div class="value" id="revenue">—</div>
     </div>
 
-  </section>
+    <div class="card">
+        <div class="label">
+            🚗 Véhicules lavés
+        </div>
+        <div class="value" id="washes">—</div>
+    </div>
 
-  <section class="panel">
-    <h2>Derniers véhicules enregistrés</h2>
-    <div id="vehicles">Chargement...</div>
-  </section>
+    <div class="card">
+        <div class="label">
+            💸 Dépenses du jour
+        </div>
+        <div class="value" id="expenses">—</div>
+    </div>
 
-  <div id="message" role="status" aria-live="polite"></div>
+    <div class="card">
+        <div class="label">
+            📈 Bénéfice du jour
+        </div>
+        <div class="value" id="profit">—</div>
+    </div>
 
-  <script>
-    const API_URL =
-      "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/admin-dashboard";
+</section>
 
-    const savedSession =
-      sessionStorage.getItem("mtRoyalWashAdminSession");
+<!-- PAYMENT METHODS -->
 
-    let loginData = null;
+<div class="section-title">
+    💳 Moyens de paiement
+</div>
+
+<section class="payments">
+
+    <div class="payment-card">
+        <div class="label">💵 Cash</div>
+        <div class="value" id="cash">0 FCFA</div>
+    </div>
+
+    <div class="payment-card">
+        <div class="label">📱 TMoney</div>
+        <div class="value" id="tmoney">0 FCFA</div>
+    </div>
+
+    <div class="payment-card">
+        <div class="label">📱 Flooz</div>
+        <div class="value" id="flooz">0 FCFA</div>
+    </div>
+
+</section>
+
+<!-- RECENT VEHICLES -->
+
+<section class="panel">
+
+    <h2>🚘 Derniers véhicules enregistrés</h2>
+
+    <div id="vehicles">
+        Chargement...
+    </div>
+
+</section>
+
+<div id="message" role="status" aria-live="polite"></div>
+
+</div>
+
+<script>
+
+const API_URL =
+"https://cgilxwdxiakfriroixih.supabase.co/functions/v1/admin-dashboard";
+
+const savedSession =
+sessionStorage.getItem("mtRoyalWashAdminSession");
+
+let loginData = null;
+
+try {
+    loginData = JSON.parse(savedSession);
+} catch {
+    loginData = null;
+}
+
+if (
+    !loginData ||
+    !loginData.access_token ||
+    !loginData.user ||
+    loginData.user.role !== "admin"
+) {
+    window.location.replace("index.html");
+}
+
+function formatCFA(amount) {
+    return Number(amount || 0).toLocaleString("fr-FR") + " FCFA";
+}
+
+async function loadDashboard() {
+
+    const message = document.getElementById("message");
 
     try {
-      loginData = JSON.parse(savedSession);
-    } catch {
-      loginData = null;
-    }
 
-    if (
-      !loginData ||
-      !loginData.access_token ||
-      !loginData.user ||
-      loginData.user.role !== "admin"
-    ) {
-      window.location.replace("index.html");
-    }
-
-    function formatCFA(amount) {
-      return Number(amount || 0).toLocaleString("fr-FR") + " FCFA";
-    }
-
-    async function loadDashboard() {
-      const message = document.getElementById("message");
-
-      try {
         const response = await fetch(API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + loginData.access_token
-          },
-          body: JSON.stringify({})
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + loginData.access_token
+            },
+
+            body: JSON.stringify({})
         });
 
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-          if (response.status === 401 || response.status === 403) {
-            sessionStorage.removeItem("mtRoyalWashAdminSession");
-            window.location.replace("index.html");
-            return;
-          }
 
-          throw new Error(data.message || "Chargement impossible.");
+            if (response.status === 401 || response.status === 403) {
+
+                sessionStorage.removeItem("mtRoyalWashAdminSession");
+
+                window.location.replace("index.html");
+
+                return;
+            }
+
+            throw new Error(data.message || "Chargement impossible.");
         }
 
         const stats = data.stats || {};
 
         document.getElementById("revenue").textContent =
-          formatCFA(stats.dailyRevenue);
-          
-          const paymentTotals = stats.paymentTotals || {};
+            formatCFA(stats.dailyRevenue);
 
-document.getElementById("cash").textContent =
-  formatCFA(paymentTotals.cash);
+        const paymentTotals = stats.paymentTotals || {};
 
-document.getElementById("tmoney").textContent =
-  formatCFA(paymentTotals.tmoney);
+        document.getElementById("cash").textContent =
+            formatCFA(paymentTotals.cash);
 
-document.getElementById("flooz").textContent =
-  formatCFA(paymentTotals.flooz);
+        document.getElementById("tmoney").textContent =
+            formatCFA(paymentTotals.tmoney);
+
+        document.getElementById("flooz").textContent =
+            formatCFA(paymentTotals.flooz);
 
         document.getElementById("washes").textContent =
-          Number(stats.dailyWashes || 0);
+            Number(stats.dailyWashes || 0);
 
         document.getElementById("expenses").textContent =
-          formatCFA(stats.dailyExpenses);
+            formatCFA(stats.dailyExpenses);
 
         document.getElementById("profit").textContent =
-          formatCFA(stats.dailyProfit);
+            formatCFA(stats.dailyProfit);
 
         const vehicles = data.vehicles || [];
+
         const vehicleBox = document.getElementById("vehicles");
 
         if (vehicles.length === 0) {
-          vehicleBox.textContent = "Aucun véhicule enregistré.";
+
+            vehicleBox.textContent = "Aucun véhicule enregistré.";
+
         } else {
-          vehicleBox.replaceChildren();
 
-          vehicles.forEach(function(vehicle) {
-            const row = document.createElement("div");
-            const type = document.createElement("strong");
-            const price = document.createElement("span");
+            vehicleBox.replaceChildren();
 
-            type.textContent = vehicle.vehicle_type || "Véhicule";
-            price.textContent = " — " + formatCFA(vehicle.price);
+            vehicles.forEach(function(vehicle) {
 
-            row.append(type, price);
-            vehicleBox.appendChild(row);
-          });
+                const row = document.createElement("div");
+
+                const type = document.createElement("strong");
+
+                const price = document.createElement("span");
+
+                type.textContent = vehicle.vehicle_type || "Véhicule";
+
+                price.textContent = " — " + formatCFA(vehicle.price);
+
+                row.append(type, price);
+
+                vehicleBox.appendChild(row);
+
+            });
+
         }
 
-      } catch (error) {
+    } catch (error) {
+
         message.textContent =
-          "Erreur : " + (error.message || "Connexion impossible.");
-      }
+            "Erreur : " + (error.message || "Connexion impossible.");
+
     }
 
-    document.getElementById("employeesButton").addEventListener(
-      "click",
-      function() {
-        window.location.href = "employees.html";
-      }
-    );
+}
 
-document.getElementById("expensesButton").addEventListener(
-  "click",
-  function() {
-    window.location.href = "expenses.html";
-  }
+document.getElementById("employeesButton").addEventListener(
+    "click",
+    function() {
+        window.location.href = "employees.html";
+    }
 );
 
-    document.getElementById("logoutButton").addEventListener(
-      "click",
-      function() {
-        sessionStorage.removeItem("mtRoyalWashAdminSession");
-        window.location.replace("index.html");
-      }
-    );
-
-    if (loginData && loginData.access_token) {
-      loadDashboard();
+document.getElementById("expensesButton").addEventListener(
+    "click",
+    function() {
+        window.location.href = "expenses.html";
     }
-  </script>
+);
+
+document.getElementById("logoutButton").addEventListener(
+    "click",
+    function() {
+
+        sessionStorage.removeItem("mtRoyalWashAdminSession");
+
+        window.location.replace("index.html");
+
+    }
+);
+
+if (loginData && loginData.access_token) {
+    loadDashboard();
+}
+
+</script>
 
 </body>
 </html>
