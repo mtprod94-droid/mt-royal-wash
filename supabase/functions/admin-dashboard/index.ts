@@ -2,12 +2,12 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "https://mtprod94-droid.github.io",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
 Deno.serve(async (req) => {
-
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -22,19 +22,20 @@ Deno.serve(async (req) => {
     });
 
   if (req.method !== "POST") {
-    return jsonResponse({
-      success: false,
-      message: "Method not allowed",
-    }, 405);
+    return jsonResponse(
+      { success: false, message: "Method not allowed" },
+      405
+    );
   }
 
+  // Authentication
   const authorization = req.headers.get("Authorization");
 
   if (!authorization?.startsWith("Bearer ")) {
-    return jsonResponse({
-      success: false,
-      message: "Unauthorized",
-    }, 401);
+    return jsonResponse(
+      { success: false, message: "Unauthorized" },
+      401
+    );
   }
 
   const supabase = createClient(
@@ -49,20 +50,19 @@ Deno.serve(async (req) => {
     }
   );
 
-  // ADMIN AUTHENTICATION
-
   const token = authorization.replace("Bearer ", "");
 
   const { data: authData, error: authError } =
     await supabase.auth.getUser(token);
 
   if (authError || !authData.user) {
-    return jsonResponse({
-      success: false,
-      message: "Invalid session",
-    }, 401);
+    return jsonResponse(
+      { success: false, message: "Invalid session" },
+      401
+    );
   }
 
+  // Admin authorization
   const userId = authData.user.id;
 
   const { data: profile, error: profileError } = await supabase
@@ -77,14 +77,13 @@ Deno.serve(async (req) => {
     profile.role !== "admin" ||
     profile.is_active !== true
   ) {
-    return jsonResponse({
-      success: false,
-      message: "Access denied",
-    }, 403);
+    return jsonResponse(
+      { success: false, message: "Access denied" },
+      403
+    );
   }
 
-  // DATE CALCULATIONS - UTC / TOGO
-
+  // Date calculations (UTC)
   const now = new Date();
 
   const startOfDay = new Date(
@@ -96,27 +95,23 @@ Deno.serve(async (req) => {
   );
 
   const startOfNextDay = new Date(
-    startOfDay.getTime() + 86400000
+    startOfDay.getTime() + 24 * 60 * 60 * 1000
   );
 
-  // WEEK STARTS MONDAY
-
-  const startOfWeek = new Date(startOfDay);
-
-  const dayOfWeek = startOfWeek.getUTCDay();
-
+  // Week starts on Monday
+  const dayOfWeek = startOfDay.getUTCDay();
   const daysSinceMonday = (dayOfWeek + 6) % 7;
 
-  startOfWeek.setUTCDate(
-    startOfWeek.getUTCDate() - daysSinceMonday
+  const startOfWeek = new Date(
+    startOfDay.getTime() -
+      daysSinceMonday * 24 * 60 * 60 * 1000
   );
 
   const startOfNextWeek = new Date(
-    startOfWeek.getTime() + 7 * 86400000
+    startOfWeek.getTime() + 7 * 24 * 60 * 60 * 1000
   );
 
-  // MONTH
-
+  // Month starts on the first day
   const startOfMonth = new Date(
     Date.UTC(
       now.getUTCFullYear(),
@@ -133,129 +128,148 @@ Deno.serve(async (req) => {
     )
   );
 
-  // LOAD TRANSACTIONS
+  // Fetch from the earliest required period.
+  // This also covers weeks crossing a month boundary.
+  const queryStart =
+    startOfWeek.getTime() < startOfMonth.getTime()
+      ? startOfWeek
+      : startOfMonth;
 
+  const queryStartISO = queryStart.toISOString();
+  const queryEndISO = startOfNextDay.toISOString();
+
+  // Load completed transactions
   const { data: transactions, error: transactionError } =
     await supabase
       .from("transactions")
       .select("amount, payment_method, created_at")
       .eq("status", "completed")
-      .gte("created_at", startOfMonth.toISOString())
-      .lt("created_at", startOfNextDay.toISOString());
+      .gte("created_at", queryStartISO)
+      .lt("created_at", queryEndISO);
 
   if (transactionError) {
-    return jsonResponse({
-      success: false,
-      message: "Could not load transactions",
-      details: transactionError.message,
-    }, 500);
+    return jsonResponse(
+      {
+        success: false,
+        message: "Could not load transactions",
+        details: transactionError.message,
+      },
+      500
+    );
   }
 
-  // LOAD EXPENSES
-
+  // Load expenses
   const { data: expenses, error: expenseError } =
     await supabase
       .from("expenses")
       .select("amount, created_at")
-      .gte("created_at", startOfMonth.toISOString())
-      .lt("created_at", startOfNextDay.toISOString());
+      .gte("created_at", queryStartISO)
+      .lt("created_at", queryEndISO);
 
   if (expenseError) {
-    return jsonResponse({
-      success: false,
-      message: "Could not load expenses",
-      details: expenseError.message,
-    }, 500);
+    return jsonResponse(
+      {
+        success: false,
+        message: "Could not load expenses",
+        details: expenseError.message,
+      },
+      500
+    );
   }
 
-  // STATISTICS CALCULATION
+  const transactionList = transactions ?? [];
+  const expenseList = expenses ?? [];
 
+  // Calculate statistics for a specific period
   const calculateStats = (
-    start: Date,
-    end: Date
+    periodStart: Date,
+    periodEnd: Date
   ) => {
+    const periodTransactions = transactionList.filter((item) => {
+      const createdAt = new Date(item.created_at).getTime();
 
-    const periodTransactions = (transactions ?? []).filter(
-      (item) => {
-        const date = new Date(item.created_at);
+      return (
+        createdAt >= periodStart.getTime() &&
+        createdAt < periodEnd.getTime()
+      );
+    });
 
-        return date >= start && date < end;
-      }
-    );
+    const periodExpenses = expenseList.filter((item) => {
+      const createdAt = new Date(item.created_at).getTime();
 
-    const periodExpenses = (expenses ?? []).filter(
-      (item) => {
-        const date = new Date(item.created_at);
-
-        return date >= start && date < end;
-      }
-    );
+      return (
+        createdAt >= periodStart.getTime() &&
+        createdAt < periodEnd.getTime()
+      );
+    });
 
     const revenue = periodTransactions.reduce(
-      (sum, item) =>
-        sum + Number(item.amount || 0),
+      (sum, item) => sum + Number(item.amount || 0),
       0
     );
 
     const totalExpenses = periodExpenses.reduce(
-      (sum, item) =>
-        sum + Number(item.amount || 0),
+      (sum, item) => sum + Number(item.amount || 0),
       0
     );
 
-    const paymentTotals = {
-      cash: 0,
-      tmoney: 0,
-      flooz: 0,
-    };
-
-    periodTransactions.forEach((item) => {
-
-      const method = String(
-        item.payment_method || ""
-      ).toLowerCase();
-
-      if (
-        method === "cash" ||
-        method === "tmoney" ||
-        method === "flooz"
-      ) {
-        paymentTotals[
-          method as keyof typeof paymentTotals
-        ] += Number(item.amount || 0);
-      }
-
-    });
-
     return {
       revenue,
+      washes: periodTransactions.length,
       expenses: totalExpenses,
       profit: revenue - totalExpenses,
-      washes: periodTransactions.length,
-      paymentTotals,
     };
-
   };
 
-  // ALL THREE PERIODS
-
-  const today = calculateStats(
+  // Calculate today, week and month
+  const todayStats = calculateStats(
     startOfDay,
     startOfNextDay
   );
 
-  const week = calculateStats(
+  const weekStats = calculateStats(
     startOfWeek,
     startOfNextWeek
   );
 
-  const month = calculateStats(
+  const monthStats = calculateStats(
     startOfMonth,
-    startOfNextMonth
+    startOfNextDay
   );
 
-  // LAST VEHICLES
+  // Payment methods for today
+  const todayTransactions = transactionList.filter((item) => {
+    const createdAt = new Date(item.created_at).getTime();
 
+    return (
+      createdAt >= startOfDay.getTime() &&
+      createdAt < startOfNextDay.getTime()
+    );
+  });
+
+  const paymentTotals = {
+    cash: 0,
+    tmoney: 0,
+    flooz: 0,
+  };
+
+  for (const transaction of todayTransactions) {
+    const method = String(
+      transaction.payment_method || ""
+    ).toLowerCase();
+
+    const amount = Number(transaction.amount || 0);
+
+    if (method === "cash") {
+      paymentTotals.cash += amount;
+    } else if (method === "tmoney") {
+      paymentTotals.tmoney += amount;
+    } else if (method === "flooz") {
+      paymentTotals.flooz += amount;
+    }
+  }
+
+  // Load latest vehicles
   const { data: vehicles, error: vehicleError } =
     await supabase
       .from("vehicles")
@@ -266,40 +280,36 @@ Deno.serve(async (req) => {
       .limit(100);
 
   if (vehicleError) {
-    return jsonResponse({
-      success: false,
-      message: "Could not load vehicles",
-      details: vehicleError.message,
-    }, 500);
+    return jsonResponse(
+      {
+        success: false,
+        message: "Could not load vehicles",
+        details: vehicleError.message,
+      },
+      500
+    );
   }
 
-  // RESPONSE
-
+  // Response
   return jsonResponse({
-
     success: true,
 
     stats: {
+      // New statistics
+      today: todayStats,
+      week: weekStats,
+      month: monthStats,
 
-      // BACKWARD COMPATIBILITY
+      // Payment methods for today
+      paymentTotals,
 
-      dailyRevenue: today.revenue,
-      dailyWashes: today.washes,
-      dailyExpenses: today.expenses,
-      dailyProfit: today.profit,
-
-      paymentTotals: today.paymentTotals,
-
-      // NEW STATISTICS
-
-      today,
-      week,
-      month,
-
+      // Legacy fields for compatibility
+      dailyRevenue: todayStats.revenue,
+      dailyWashes: todayStats.washes,
+      dailyExpenses: todayStats.expenses,
+      dailyProfit: todayStats.profit,
     },
 
     vehicles: vehicles ?? [],
-
   });
-
 });
