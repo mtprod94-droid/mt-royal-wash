@@ -201,6 +201,58 @@ footer {
   font-size: 12px;
   padding: 25px;
 }
+
+.category-heading {
+  text-align: center;
+  font-size: 17px;
+  letter-spacing: 1px;
+  margin: 25px 0;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 25px;
+}
+
+.category-card {
+  min-height: 145px;
+  background: #f6faff;
+  border: 2px solid #dceaf8;
+  border-radius: 22px;
+  color: #193b59;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.category-card span {
+  font-size: 30px;
+}
+
+.category-card.selected {
+  background: #e1f1ff;
+  border: 3px solid #1976bd;
+  color: #1261a0;
+}
+
+@media (max-width: 380px) {
+  .category-grid {
+    gap: 9px;
+  }
+
+  .category-card {
+    min-height: 125px;
+    font-size: 14px;
+  }
+}
+
 </style>
 </head>
 
@@ -235,16 +287,55 @@ footer {
 
   <form id="expenseForm">
 
-    <select id="category" required>
-      <option value="">Choisir une catégorie</option>
-      <option>Produits de lavage</option>
-      <option>Électricité</option>
-      <option>Eau</option>
-      <option>Entretien</option>
-      <option>Transport</option>
-      <option>Salaires</option>
-      <option>Autres</option>
-    </select>
+    <h3 class="category-heading">CATÉGORIE DE DÉPENSE</h3>
+
+<div class="category-grid">
+  <button type="button" class="category-card" data-category="Produits de lavage">
+    <span>🧴</span>
+    Produits de lavage
+  </button>
+
+  <button type="button" class="category-card" data-category="Électricité">
+    <span>⚡</span>
+    Électricité
+  </button>
+
+  <button type="button" class="category-card" data-category="Eau">
+    <span>💧</span>
+    Eau
+  </button>
+
+  <button type="button" class="category-card" data-category="Entretien">
+    <span>🔧</span>
+    Entretien
+  </button>
+
+  <button type="button" class="category-card" data-category="Transport">
+    <span>🚚</span>
+    Transport
+  </button>
+
+  <button type="button" class="category-card" data-category="Salaires">
+    <span>👥</span>
+    Salaires
+  </button>
+
+  <button type="button" class="category-card" data-category="Autres">
+    <span>📋</span>
+    Autres
+  </button>
+</div>
+
+<select id="category" required hidden>
+  <option value="">Choisir une catégorie</option>
+  <option>Produits de lavage</option>
+  <option>Électricité</option>
+  <option>Eau</option>
+  <option>Entretien</option>
+  <option>Transport</option>
+  <option>Salaires</option>
+  <option>Autres</option>
+</select>
 
     <input
       id="description"
@@ -450,6 +541,19 @@ async function loadExpenses() {
     message(listMessage, error.message, "error");
   }
 }
+
+document.querySelectorAll(".category-card").forEach(button => {
+  button.addEventListener("click", function() {
+    document.querySelectorAll(".category-card").forEach(card => {
+      card.classList.remove("selected");
+    });
+
+    this.classList.add("selected");
+
+    document.getElementById("category").value =
+      this.dataset.category;
+  });
+});
 
 document.getElementById("expenseForm").addEventListener(
   "submit",
