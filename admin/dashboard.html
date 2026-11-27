@@ -456,6 +456,64 @@ function formatCFA(amount) {
 
 let dashboardStats = null;
 
+let revenueChart = null;
+
+function renderRevenueChart(dailyData) {
+
+    const chartContainer = document.getElementById("revenueChart");
+
+    if (!chartContainer) return;
+
+    if (revenueChart) {
+        revenueChart.destroy();
+    }
+
+    chartContainer.replaceChildren();
+
+    const canvas = document.createElement("canvas");
+    chartContainer.appendChild(canvas);
+
+    const labels = dailyData.map(item => {
+        const date = new Date(item.date + "T00:00:00");
+        return date.toLocaleDateString("fr-FR", {
+            day: "2-digit",
+            month: "2-digit"
+        });
+    });
+
+    const revenues = dailyData.map(item =>
+        Number(item.revenue || 0)
+    );
+
+    revenueChart = new Chart(canvas, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Chiffre d'affaires (FCFA)",
+                data: revenues,
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    chartContainer.style.height = "300px";
+}
+
 function renderPeriodStats(period) {
 
     if (!dashboardStats) return;
@@ -533,6 +591,10 @@ async function loadDashboard() {
         dashboardStats = data.stats || {};
 
 renderPeriodStats("today");
+
+renderRevenueChart(
+    dashboardStats.dailyRevenueByDay || []
+);
 
 const paymentTotals = dashboardStats.paymentTotals || {};
 
