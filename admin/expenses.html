@@ -109,9 +109,23 @@ footer{text-align:center;color:#8497a8;font-size:12px;padding:25px}
 <section class="panel">
   <h2>📋 Historique des dépenses</h2>
 
-  <button class="primary" id="refresh" type="button">
-    Actualiser
-  </button>
+<label for="dateFrom">Du :</label>
+<input type="date" id="dateFrom">
+
+<label for="dateTo">Au :</label>
+<input type="date" id="dateTo">
+
+<button class="primary" id="filterButton" type="button">
+  Filtrer par date
+</button>
+
+<button class="logout" id="resetFilter" type="button">
+  Réinitialiser
+</button>
+
+<button class="primary" id="refresh" type="button">
+  Actualiser
+</button>
 
   <div id="expenseList" style="margin-top:15px">
     <div class="empty">Chargement...</div>
