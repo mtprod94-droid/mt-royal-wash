@@ -7,34 +7,194 @@
 <title>Dépenses | MT ROYAL WASH</title>
 
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(145deg,#eaf4ff,#fff);color:#17324d}
-header{background:#fff;padding:18px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid #dce9f5}
-.brand{font-size:20px;font-weight:800;color:#1261a0}
-.subtitle{font-size:12px;color:#71869a;margin-top:4px}
-button{cursor:pointer;border:0;border-radius:9px;padding:12px 16px;font-weight:bold}
-.logout{background:#edf4fa;color:#31516e}
-main{width:min(100% - 28px,750px);margin:25px auto}
-.back{display:inline-block;margin-bottom:18px;color:#1769aa;text-decoration:none;font-weight:bold}
-.panel{background:white;padding:21px;border-radius:16px;margin-bottom:18px;border:1px solid #e1edf7;box-shadow:0 5px 20px #1e507812}
-h1{font-size:24px;margin:0 0 8px}
-h2{font-size:19px;margin:0 0 18px}
-.muted{font-size:14px;color:#71869a}
-input,select{width:100%;padding:14px;border:1px solid #d4e2ef;border-radius:9px;font-size:16px;background:#fbfdff;color:#17324d;margin-bottom:13px}
-.primary{background:#1672b9;color:white}
-.primary:disabled{opacity:.6}
-.total{background:#edf7ff;border-radius:12px;padding:18px;font-size:14px;color:#55738d}
-.total strong{display:block;font-size:25px;color:#1261a0;margin-top:8px}
-.expense{padding:15px 0;border-bottom:1px solid #e8eff5}
-.expense:last-child{border:0}
-.expense-title{font-weight:bold;margin-bottom:5px}
-.expense-info{font-size:13px;color:#71869a;line-height:1.6}
-.expense-amount{font-weight:bold;color:#1769aa;margin-top:6px}
-.message{display:none;padding:12px;border-radius:9px;margin-top:13px;font-size:14px;overflow-wrap:anywhere}
-.success{display:block;background:#e5f8ed;color:#176d3b}
-.error{display:block;background:#fff0f0;color:#b42f2f}
-.empty{text-align:center;padding:20px;color:#71869a}
-footer{text-align:center;color:#8497a8;font-size:12px;padding:25px}
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(145deg, #eaf4ff, #ffffff);
+  color: #17324d;
+}
+
+header {
+  background: #fff;
+  padding: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #dce9f5;
+}
+
+.brand {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1261a0;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: #71869a;
+  margin-top: 4px;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 10px;
+  padding: 13px 17px;
+  font-weight: bold;
+}
+
+button:active {
+  transform: scale(.98);
+}
+
+.logout {
+  background: #edf4fa;
+  color: #31516e;
+}
+
+main {
+  width: min(100% - 28px, 750px);
+  margin: 25px auto;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: #1769aa;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.panel {
+  background: white;
+  padding: 22px;
+  border-radius: 17px;
+  margin-bottom: 20px;
+  border: 1px solid #e1edf7;
+  box-shadow: 0 5px 20px #1e507812;
+}
+
+h1 {
+  font-size: 24px;
+  margin: 0 0 8px;
+}
+
+h2 {
+  font-size: 19px;
+  margin: 0 0 18px;
+}
+
+.muted {
+  font-size: 14px;
+  color: #71869a;
+  line-height: 1.6;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #d4e2ef;
+  border-radius: 10px;
+  font-size: 16px;
+  background: #fbfdff;
+  color: #17324d;
+  margin-bottom: 13px;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid #8cc8f5;
+  border-color: #1672b9;
+}
+
+.primary {
+  background: #1672b9;
+  color: white;
+}
+
+.primary:disabled {
+  opacity: .6;
+}
+
+.total {
+  background: linear-gradient(135deg, #edf7ff, #dcefff);
+  border-radius: 14px;
+  padding: 22px;
+  font-size: 14px;
+  color: #55738d;
+}
+
+.total strong {
+  display: block;
+  font-size: 28px;
+  color: #1261a0;
+  margin-top: 9px;
+}
+
+.expense {
+  padding: 17px;
+  margin-bottom: 12px;
+  border: 1px solid #e5eef6;
+  border-radius: 12px;
+  background: #fbfdff;
+}
+
+.expense-title {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.expense-info {
+  font-size: 13px;
+  color: #71869a;
+  line-height: 1.6;
+}
+
+.expense-amount {
+  font-weight: bold;
+  color: #1769aa;
+  margin-top: 8px;
+}
+
+.message {
+  display: none;
+  padding: 12px;
+  border-radius: 9px;
+  margin-top: 13px;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.success {
+  display: block;
+  background: #e5f8ed;
+  color: #176d3b;
+}
+
+.error {
+  display: block;
+  background: #fff0f0;
+  color: #b42f2f;
+}
+
+.empty {
+  text-align: center;
+  padding: 20px;
+  color: #71869a;
+}
+
+footer {
+  text-align: center;
+  color: #8497a8;
+  font-size: 12px;
+  padding: 25px;
+}
 </style>
 </head>
 
