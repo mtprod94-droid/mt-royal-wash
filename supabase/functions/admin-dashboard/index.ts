@@ -7,6 +7,7 @@ const corsHeaders = {
 };
 
 Deno.serve(async (req) => {
+
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -21,13 +22,19 @@ Deno.serve(async (req) => {
     });
 
   if (req.method !== "POST") {
-    return jsonResponse({ success: false, message: "Method not allowed" }, 405);
+    return jsonResponse({
+      success: false,
+      message: "Method not allowed",
+    }, 405);
   }
 
   const authorization = req.headers.get("Authorization");
 
   if (!authorization?.startsWith("Bearer ")) {
-    return jsonResponse({ success: false, message: "Unauthorized" }, 401);
+    return jsonResponse({
+      success: false,
+      message: "Unauthorized",
+    }, 401);
   }
 
   const supabase = createClient(
@@ -42,12 +49,18 @@ Deno.serve(async (req) => {
     }
   );
 
+  // ADMIN AUTHENTICATION
+
   const token = authorization.replace("Bearer ", "");
+
   const { data: authData, error: authError } =
     await supabase.auth.getUser(token);
 
   if (authError || !authData.user) {
-    return jsonResponse({ success: false, message: "Invalid session" }, 401);
+    return jsonResponse({
+      success: false,
+      message: "Invalid session",
+    }, 401);
   }
 
   const userId = authData.user.id;
@@ -64,26 +77,71 @@ Deno.serve(async (req) => {
     profile.role !== "admin" ||
     profile.is_active !== true
   ) {
-    return jsonResponse({ success: false, message: "Access denied" }, 403);
+    return jsonResponse({
+      success: false,
+      message: "Access denied",
+    }, 403);
   }
 
+  // DATE CALCULATIONS - UTC / TOGO
+
   const now = new Date();
+
   const startOfDay = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate()
+    )
   );
+
   const startOfNextDay = new Date(
-    startOfDay.getTime() + 24 * 60 * 60 * 1000
+    startOfDay.getTime() + 86400000
   );
 
-  const start = startOfDay.toISOString();
-  const end = startOfNextDay.toISOString();
+  // WEEK STARTS MONDAY
 
-  const { data: transactions, error: transactionError } = await supabase
-    .from("transactions")
-    .select("amount, created_at, payment_method")
-    .eq("status", "completed")
-    .gte("created_at", start)
-    .lt("created_at", end);
+  const startOfWeek = new Date(startOfDay);
+
+  const dayOfWeek = startOfWeek.getUTCDay();
+
+  const daysSinceMonday = (dayOfWeek + 6) % 7;
+
+  startOfWeek.setUTCDate(
+    startOfWeek.getUTCDate() - daysSinceMonday
+  );
+
+  const startOfNextWeek = new Date(
+    startOfWeek.getTime() + 7 * 86400000
+  );
+
+  // MONTH
+
+  const startOfMonth = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      1
+    )
+  );
+
+  const startOfNextMonth = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth() + 1,
+      1
+    )
+  );
+
+  // LOAD TRANSACTIONS
+
+  const { data: transactions, error: transactionError } =
+    await supabase
+      .from("transactions")
+      .select("amount, payment_method, created_at")
+      .eq("status", "completed")
+      .gte("created_at", startOfMonth.toISOString())
+      .lt("created_at", startOfNextDay.toISOString());
 
   if (transactionError) {
     return jsonResponse({
@@ -93,11 +151,14 @@ Deno.serve(async (req) => {
     }, 500);
   }
 
-  const { data: expenses, error: expenseError } = await supabase
-    .from("expenses")
-    .select("amount, created_at")
-    .gte("created_at", start)
-    .lt("created_at", end);
+  // LOAD EXPENSES
+
+  const { data: expenses, error: expenseError } =
+    await supabase
+      .from("expenses")
+      .select("amount, created_at")
+      .gte("created_at", startOfMonth.toISOString())
+      .lt("created_at", startOfNextDay.toISOString());
 
   if (expenseError) {
     return jsonResponse({
@@ -107,38 +168,102 @@ Deno.serve(async (req) => {
     }, 500);
   }
 
-  const dailyRevenue = (transactions ?? []).reduce(
-    (sum, item) => sum + Number(item.amount || 0),
-    0
+  // STATISTICS CALCULATION
+
+  const calculateStats = (
+    start: Date,
+    end: Date
+  ) => {
+
+    const periodTransactions = (transactions ?? []).filter(
+      (item) => {
+        const date = new Date(item.created_at);
+
+        return date >= start && date < end;
+      }
+    );
+
+    const periodExpenses = (expenses ?? []).filter(
+      (item) => {
+        const date = new Date(item.created_at);
+
+        return date >= start && date < end;
+      }
+    );
+
+    const revenue = periodTransactions.reduce(
+      (sum, item) =>
+        sum + Number(item.amount || 0),
+      0
+    );
+
+    const totalExpenses = periodExpenses.reduce(
+      (sum, item) =>
+        sum + Number(item.amount || 0),
+      0
+    );
+
+    const paymentTotals = {
+      cash: 0,
+      tmoney: 0,
+      flooz: 0,
+    };
+
+    periodTransactions.forEach((item) => {
+
+      const method = String(
+        item.payment_method || ""
+      ).toLowerCase();
+
+      if (
+        method === "cash" ||
+        method === "tmoney" ||
+        method === "flooz"
+      ) {
+        paymentTotals[
+          method as keyof typeof paymentTotals
+        ] += Number(item.amount || 0);
+      }
+
+    });
+
+    return {
+      revenue,
+      expenses: totalExpenses,
+      profit: revenue - totalExpenses,
+      washes: periodTransactions.length,
+      paymentTotals,
+    };
+
+  };
+
+  // ALL THREE PERIODS
+
+  const today = calculateStats(
+    startOfDay,
+    startOfNextDay
   );
 
-const paymentTotals = (transactions ?? []).reduce(
-  (totals, item) => {
-    const method = item.payment_method;
-
-    if (method === "cash") totals.cash += Number(item.amount || 0);
-    if (method === "tmoney") totals.tmoney += Number(item.amount || 0);
-    if (method === "flooz") totals.flooz += Number(item.amount || 0);
-
-    return totals;
-  },
-  { cash: 0, tmoney: 0, flooz: 0 }
-);
-
-  const dailyWashes = (transactions ?? []).length;
-
-  const dailyExpenses = (expenses ?? []).reduce(
-    (sum, item) => sum + Number(item.amount || 0),
-    0
+  const week = calculateStats(
+    startOfWeek,
+    startOfNextWeek
   );
 
-  const dailyProfit = dailyRevenue - dailyExpenses;
+  const month = calculateStats(
+    startOfMonth,
+    startOfNextMonth
+  );
 
-    const { data: vehicles, error: vehicleError } = await supabase
-    .from("vehicles")
-    .select("id, vehicle_type, price, created_at, employee_id")
-    .order("created_at", { ascending: false })
-    .limit(100);
+  // LAST VEHICLES
+
+  const { data: vehicles, error: vehicleError } =
+    await supabase
+      .from("vehicles")
+      .select(
+        "id, vehicle_type, price, created_at, employee_id"
+      )
+      .order("created_at", { ascending: false })
+      .limit(100);
 
   if (vehicleError) {
     return jsonResponse({
@@ -148,15 +273,33 @@ const paymentTotals = (transactions ?? []).reduce(
     }, 500);
   }
 
+  // RESPONSE
+
   return jsonResponse({
+
     success: true,
+
     stats: {
-      dailyRevenue,
-      paymentTotals,
-      dailyWashes,
-      dailyExpenses,
-      dailyProfit,
+
+      // BACKWARD COMPATIBILITY
+
+      dailyRevenue: today.revenue,
+      dailyWashes: today.washes,
+      dailyExpenses: today.expenses,
+      dailyProfit: today.profit,
+
+      paymentTotals: today.paymentTotals,
+
+      // NEW STATISTICS
+
+      today,
+      week,
+      month,
+
     },
+
     vehicles: vehicles ?? [],
+
   });
+
 });
