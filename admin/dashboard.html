@@ -73,6 +73,30 @@ button {
     color: #18324f;
 }
 
+.period-selector {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 15px 0 20px;
+}
+
+.period-button {
+    background: #ffffff;
+    color: #333333;
+    border: 1px solid #dce3ea;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.period-button.active {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
+
 /* MENU */
 
 .menu {
@@ -294,11 +318,55 @@ h2 {
 
 <!-- FINANCIAL OVERVIEW -->
 
-<div class="section-title">
+<div class="section-title" id="financialTitle">
     📊 Résumé de la journée
 </div>
 
+<div class="period-selector">
+    <button type="button" class="period-button active" data-period="today">
+        Aujourd'hui
+    </button>
+
+    <button type="button" class="period-button" data-period="week">
+        Cette semaine
+    </button>
+
+    <button type="button" class="period-button" data-period="month">
+        Ce mois
+    </button>
+</div>
+
 <section class="cards">
+
+    <div class="card primary">
+        <div class="label">
+            Chiffre d'affaires
+        </div>
+        <div class="value" id="revenue">—</div>
+    </div>
+
+    <div class="card">
+        <div class="label">
+            🚗 Véhicules lavés
+        </div>
+        <div class="value" id="washes">—</div>
+    </div>
+
+    <div class="card">
+        <div class="label">
+            💸 Dépenses
+        </div>
+        <div class="value" id="expenses">—</div>
+    </div>
+
+    <div class="card">
+        <div class="label">
+            📈 Bénéfice
+        </div>
+        <div class="value" id="profit">—</div>
+    </div>
+
+</section>
 
     <div class="card primary">
         <div class="label">
@@ -400,6 +468,49 @@ function formatCFA(amount) {
     return Number(amount || 0).toLocaleString("fr-FR") + " FCFA";
 }
 
+let dashboardStats = null;
+
+function renderPeriodStats(period) {
+
+    if (!dashboardStats) return;
+
+    const stats = dashboardStats[period];
+
+    if (!stats) {
+        document.getElementById("message").textContent =
+            "Statistiques indisponibles.";
+        return;
+    }
+
+    document.getElementById("revenue").textContent =
+        formatCFA(stats.revenue);
+
+    document.getElementById("washes").textContent =
+        Number(stats.washes || 0);
+
+    document.getElementById("expenses").textContent =
+        formatCFA(stats.expenses);
+
+    document.getElementById("profit").textContent =
+        formatCFA(stats.profit);
+
+    const titles = {
+        today: "📊 Résumé de la journée",
+        week: "📊 Résumé de la semaine",
+        month: "📊 Résumé du mois"
+    };
+
+    document.getElementById("financialTitle").textContent =
+        titles[period];
+
+    document.querySelectorAll(".period-button").forEach(button => {
+        button.classList.toggle(
+            "active",
+            button.dataset.period === period
+        );
+    });
+}
+
 async function loadDashboard() {
 
     const message = document.getElementById("message");
@@ -433,30 +544,20 @@ async function loadDashboard() {
             throw new Error(data.message || "Chargement impossible.");
         }
 
-        const stats = data.stats || {};
+        dashboardStats = data.stats || {};
 
-        document.getElementById("revenue").textContent =
-            formatCFA(stats.dailyRevenue);
+renderPeriodStats("today");
 
-        const paymentTotals = stats.paymentTotals || {};
+const paymentTotals = dashboardStats.paymentTotals || {};
 
-        document.getElementById("cash").textContent =
-            formatCFA(paymentTotals.cash);
+document.getElementById("cash").textContent =
+    formatCFA(paymentTotals.cash);
 
-        document.getElementById("tmoney").textContent =
-            formatCFA(paymentTotals.tmoney);
+document.getElementById("tmoney").textContent =
+    formatCFA(paymentTotals.tmoney);
 
-        document.getElementById("flooz").textContent =
-            formatCFA(paymentTotals.flooz);
-
-        document.getElementById("washes").textContent =
-            Number(stats.dailyWashes || 0);
-
-        document.getElementById("expenses").textContent =
-            formatCFA(stats.dailyExpenses);
-
-        document.getElementById("profit").textContent =
-            formatCFA(stats.dailyProfit);
+document.getElementById("flooz").textContent =
+    formatCFA(paymentTotals.flooz);
 
         const vehicles = data.vehicles || [];
 
@@ -498,6 +599,12 @@ async function loadDashboard() {
     }
 
 }
+
+document.querySelectorAll(".period-button").forEach(button => {
+    button.addEventListener("click", function() {
+        renderPeriodStats(this.dataset.period);
+    });
+});
 
 document.getElementById("employeesButton").addEventListener(
     "click",
