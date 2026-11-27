@@ -112,6 +112,19 @@ Deno.serve(async (req) => {
     0
   );
 
+const paymentTotals = (transactions ?? []).reduce(
+  (totals, item) => {
+    const method = item.payment_method;
+
+    if (method === "cash") totals.cash += Number(item.amount || 0);
+    if (method === "tmoney") totals.tmoney += Number(item.amount || 0);
+    if (method === "flooz") totals.flooz += Number(item.amount || 0);
+
+    return totals;
+  },
+  { cash: 0, tmoney: 0, flooz: 0 }
+);
+
   const dailyWashes = (transactions ?? []).length;
 
   const dailyExpenses = (expenses ?? []).reduce(
@@ -139,6 +152,7 @@ Deno.serve(async (req) => {
     success: true,
     stats: {
       dailyRevenue,
+      paymentTotals,
       dailyWashes,
       dailyExpenses,
       dailyProfit,
