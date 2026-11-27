@@ -205,7 +205,34 @@ async function loadExpenses() {
 
   try {
     const data = await request("GET");
-    const expenses = data.expenses || [];
+    let expenses = data.expenses || [];
+
+    const from = document.getElementById("dateFrom").value;
+    const to = document.getElementById("dateTo").value;
+
+    function getLomeDate(value) {
+      const parts = new Intl.DateTimeFormat("en", {
+        timeZone: "Africa/Lome",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(new Date(value));
+
+      const year = parts.find(p => p.type === "year").value;
+      const month = parts.find(p => p.type === "month").value;
+      const day = parts.find(p => p.type === "day").value;
+
+      return `${year}-${month}-${day}`;
+    }
+
+    expenses = expenses.filter(expense => {
+      const date = getLomeDate(expense.created_at);
+
+      if (from && date < from) return false;
+      if (to && date > to) return false;
+
+      return true;
+    });
 
     const total = expenses.reduce(
       (sum, expense) => sum + Number(expense.amount || 0),
@@ -216,7 +243,7 @@ async function loadExpenses() {
 
     if (expenses.length === 0) {
       list.innerHTML =
-        '<div class="empty">Aucune dépense enregistrée.</div>';
+        '<div class="empty">Aucune dépense enregistrée pour cette période.</div>';
       return;
     }
 
@@ -307,6 +334,34 @@ document.getElementById("expenseForm").addEventListener(
 document.getElementById("refresh").addEventListener(
   "click",
   loadExpenses
+);
+
+document.getElementById("filterButton").addEventListener(
+  "click",
+  function() {
+    const from = document.getElementById("dateFrom").value;
+    const to = document.getElementById("dateTo").value;
+
+    if (from && to && from > to) {
+      message(
+        listMessage,
+        "La date de début doit précéder la date de fin.",
+        "error"
+      );
+      return;
+    }
+
+    loadExpenses();
+  }
+);
+
+document.getElementById("resetFilter").addEventListener(
+  "click",
+  function() {
+    document.getElementById("dateFrom").value = "";
+    document.getElementById("dateTo").value = "";
+    loadExpenses();
+  }
 );
 
 document.getElementById("logout").addEventListener(
