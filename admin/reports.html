@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapports – MT ROYAL WASH</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+  --blue:#123b68;
+  --gold:#d6ad55;
+  --bg:#f3f6fa;
+  --text:#172b43;
+  --muted:#718096;
+  --white:#fff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+header{
+  background:linear-gradient(120deg,#0b2545,#174d7d);
+  color:white;
+  padding:24px 18px;
+}
+.header-inner,.container{
+  max-width:1100px;
+  margin:auto;
+}
+header h1{margin:0 0 7px;font-size:24px}
+header p{margin:0;color:#d8e5f2;font-size:14px}
+.back{
+  display:inline-block;
+  margin-top:16px;
+  padding:10px 15px;
+  border:1px solid #ffffff66;
+  border-radius:8px;
+  color:white;
+  text-decoration:none;
+  font-size:14px;
+}
+.container{padding:22px 16px 40px}
+.section-title{font-size:18px;margin:24px 0 14px}
+.periods{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-bottom:18px;
+}
+.periods button{
+  border:1px solid #d8e0e9;
+  background:white;
+  color:var(--blue);
+  padding:11px 18px;
+  border-radius:9px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.periods button.active{
+  background:var(--blue);
+  color:white;
+  border-color:var(--blue);
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:13px;
+}
+.card{
+  background:white;
+  border-radius:13px;
+  padding:17px;
+  box-shadow:0 3px 12px #142b4510;
+}
+.card-label{font-size:13px;color:var(--muted)}
+.card-value{
+  font-size:25px;
+  font-weight:800;
+  margin-top:9px;
+  overflow-wrap:anywhere;
+}
+.card small{display:block;color:var(--muted);margin-top:6px}
+.panel{
+  background:white;
+  border-radius:13px;
+  padding:18px;
+  box-shadow:0 3px 12px #142b4510;
+  margin-top:16px;
+}
+.panel h3{margin:0 0 16px;font-size:16px}
+.chart-wrap{height:270px;position:relative}
+.payments{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+}
+.payment{
+  background:#f5f7fa;
+  border-radius:10px;
+  padding:13px 9px;
+  text-align:center;
+}
+.payment strong{display:block;font-size:17px;margin-bottom:6px}
+.payment span{font-size:12px;color:var(--muted)}
+#message{
+  padding:14px;
+  background:white;
+  border-radius:10px;
+  color:var(--muted);
+  margin-bottom:15px;
+}
+.hidden{display:none!important}
+@media(min-width:700px){
+  .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  header h1{font-size:29px}
+}
+@media(max-width:380px){
+  .card-value{font-size:21px}
+  .payments{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1>📊 Rapports</h1>
+    <p>MT ROYAL WASH – Analyse de votre activité</p>
+    <a class="back" href="dashboard.html">← Retour au tableau de bord</a>
+  </div>
+</header>
+
+<main class="container">
+
+  <div id="message">Chargement des rapports...</div>
+
+  <h2 class="section-title">Période</h2>
+  <div class="periods">
+    <button type="button" data-period="today" class="active">Aujourd’hui</button>
+    <button type="button" data-period="week">Cette semaine</button>
+    <button type="button" data-period="month">Ce mois</button>
+  </div>
+
+  <h2 class="section-title">Indicateurs principaux</h2>
+  <section class="grid">
+    <div class="card">
+      <div class="card-label">💰 Chiffre d’affaires</div>
+      <div class="card-value" id="revenue">—</div>
+      <small>Recettes de la période</small>
+    </div>
+
+    <div class="card">
+      <div class="card-label">🚗 Véhicules lavés</div>
+      <div class="card-value" id="washes">—</div>
+      <small>Nombre de lavages</small>
+    </div>
+
+    <div class="card">
+      <div class="card-label">💸 Dépenses</div>
+      <div class="card-value" id="expenses">—</div>
+      <small>Dépenses de la période</small>
+    </div>
+
+    <div class="card">
+      <div class="card-label">📈 Bénéfice</div>
+      <div class="card-value" id="profit">—</div>
+      <small>Résultat de la période</small>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h3>Évolution du chiffre d’affaires – 30 derniers jours</h3>
+    <div class="chart-wrap">
+      <canvas id="revenueChart"></canvas>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h3>Moyens de paiement</h3>
+    <div class="payments">
+      <div class="payment">
+        <strong id="cash">—</strong>
+        <span>Espèces</span>
+      </div>
+      <div class="payment">
+        <strong id="tmoney">—</strong>
+        <span>TMoney</span>
+      </div>
+      <div class="payment">
+        <strong id="flooz">—</strong>
+        <span>Flooz</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function(){
+
+  const SESSION_KEY = "mtRoyalWashAdminSession";
+  const FUNCTION_URL =
+    "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/admin-dashboard";
+
+  const message = document.getElementById("message");
+
+  let loginData = null;
+  let reportData = null;
+  let chart = null;
+  let currentPeriod = "today";
+
+  try {
+    loginData = JSON.parse(sessionStorage.getItem(SESSION_KEY));
+  } catch (error) {
+    loginData = null;
+  }
+
+  if (
+    !loginData ||
+    !loginData.access_token ||
+    !loginData.user ||
+    loginData.user.role !== "admin"
+  ) {
+    window.location.replace("index.html");
+    return;
+  }
+
+  function formatMoney(value){
+    return new Intl.NumberFormat("fr-FR").format(
+      Number(value || 0)
+    ) + " FCFA";
+  }
+
+  function showMessage(text){
+    message.textContent = text;
+    message.classList.remove("hidden");
+  }
+
+  function hideMessage(){
+    message.classList.add("hidden");
+  }
+
+  async function loadReports(){
+
+    showMessage("Chargement des rapports...");
+
+    try {
+
+      const response = await fetch(FUNCTION_URL,{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization":"Bearer " + loginData.access_token
+        },
+        body:JSON.stringify({})
+      });
+
+      const data = await response.json();
+
+      if(!response.ok || data.success === false){
+        throw new Error(
+          data.message || data.error || "Erreur de chargement."
+        );
+      }
+
+      reportData = data;
+
+      renderReports();
+      renderChart();
+      renderPayments();
+
+      hideMessage();
+
+    } catch(error) {
+      console.error("Reports error:",error);
+      showMessage(
+        "Impossible de charger les rapports. " + error.message
+      );
+    }
+  }
+
+  function renderReports(){
+
+    const stats = reportData.stats || {};
+    const period = stats[currentPeriod] || {};
+
+    document.getElementById("revenue").textContent =
+      formatMoney(period.revenue);
+
+    document.getElementById("washes").textContent =
+      Number(period.washes || 0).toLocaleString("fr-FR");
+
+    document.getElementById("expenses").textContent =
+      formatMoney(period.expenses);
+
+    document.getElementById("profit").textContent =
+      formatMoney(period.profit);
+
+  }
+
+  function renderChart(){
+
+    const rows =
+      reportData.stats?.dailyRevenueByDay || [];
+
+    const labels = rows.map(item => {
+      const date = new Date(item.date + "T00:00:00");
+      return date.toLocaleDateString("fr-FR",{
+        day:"2-digit",
+        month:"2-digit"
+      });
+    });
+
+    const values = rows.map(item =>
+      Number(item.revenue || 0)
+    );
+
+    const ctx =
+      document.getElementById("revenueChart").getContext("2d");
+
+    if(chart){
+      chart.destroy();
+    }
+
+    chart = new Chart(ctx,{
+      type:"line",
+      data:{
+        labels:labels,
+        datasets:[{
+          label:"Chiffre d’affaires",
+          data:values,
+          borderColor:"#174d7d",
+          backgroundColor:"rgba(23,77,125,0.12)",
+          borderWidth:3,
+          fill:true,
+          tension:0.35,
+          pointRadius:3,
+          pointBackgroundColor:"#d6ad55"
+        }]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        plugins:{
+          legend:{display:false},
+          tooltip:{
+            callbacks:{
+              label:function(context){
+                return formatMoney(context.raw);
+              }
+            }
+          }
+        },
+        scales:{
+          y:{
+            beginAtZero:true,
+            ticks:{
+              callback:function(value){
+                return new Intl.NumberFormat("fr-FR",{
+                  notation:"compact"
+                }).format(value);
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function renderPayments(){
+
+    const totals = reportData.stats?.paymentTotals || {};
+
+    document.getElementById("cash").textContent =
+      formatMoney(totals.cash);
+
+    document.getElementById("tmoney").textContent =
+      formatMoney(totals.tmoney);
+
+    document.getElementById("flooz").textContent =
+      formatMoney(totals.flooz);
+  }
+
+  document.querySelectorAll("[data-period]").forEach(button => {
+
+    button.addEventListener("click",function(){
+
+      currentPeriod = this.dataset.period;
+
+      document.querySelectorAll("[data-period]").forEach(item =>
+        item.classList.remove("active")
+      );
+
+      this.classList.add("active");
+
+      if(reportData){
+        renderReports();
+      }
+
+    });
+
+  });
+
+  loadReports();
+
+})();
+</script>
+
+</body>
+</html>
