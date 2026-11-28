@@ -8,9 +8,7 @@
   <title>MT ROYAL WASH - Espace Employé</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -117,7 +115,8 @@
       margin-bottom: 12px;
     }
 
-    .choices {
+    .choices,
+    .payment-choices {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
@@ -151,9 +150,7 @@
       outline-offset: 2px;
     }
 
-    .choice-icon {
-      font-size: 29px;
-    }
+    .choice-icon { font-size: 29px; }
 
     .choice-name {
       font-size: 13px;
@@ -163,12 +160,6 @@
     .choice-price {
       font-size: 12px;
       color: #688198;
-    }
-
-    .payment-choices {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
     }
 
     .payment-choices .choice {
@@ -212,7 +203,7 @@
 
     .register:disabled {
       opacity: .6;
-      cursor: wait;
+      cursor: not-allowed;
     }
 
     .message {
@@ -242,9 +233,7 @@
       border-bottom: 1px solid #e8eff5;
     }
 
-    .transaction:last-child {
-      border-bottom: 0;
-    }
+    .transaction:last-child { border-bottom: 0; }
 
     .transaction-name {
       font-weight: bold;
@@ -279,25 +268,11 @@
     }
 
     @media (max-width: 380px) {
-      .choice {
-        padding: 11px 4px;
-      }
-
-      .choice-name {
-        font-size: 12px;
-      }
-
-      .choice-icon {
-        font-size: 25px;
-      }
-
-      .stat-value {
-        font-size: 20px;
-      }
-
-      .panel {
-        padding: 16px;
-      }
+      .choice { padding: 11px 4px; }
+      .choice-name { font-size: 12px; }
+      .choice-icon { font-size: 25px; }
+      .stat-value { font-size: 20px; }
+      .panel { padding: 16px; }
     }
   </style>
 </head>
@@ -345,67 +320,21 @@
       1. Choisir le véhicule
     </div>
 
-    <div class="choices" id="vehicleChoices">
-
-      <button type="button" class="choice"
-        data-value="moto" data-price="500"
-        aria-pressed="false">
-        <span class="choice-icon">🏍️</span>
-        <span class="choice-name">Moto</span>
-        <span class="choice-price">500 FCFA</span>
-      </button>
-
-      <button type="button" class="choice"
-        data-value="small_car" data-price="2000"
-        aria-pressed="false">
-        <span class="choice-icon">🚘</span>
-        <span class="choice-name">Petite voiture</span>
-        <span class="choice-price">2 000 FCFA</span>
-      </button>
-
-      <button type="button" class="choice"
-        data-value="suv" data-price="2500"
-        aria-pressed="false">
-        <span class="choice-icon">🚙</span>
-        <span class="choice-name">SUV / 4x4</span>
-        <span class="choice-price">2 500 FCFA</span>
-      </button>
-
-    </div>
+    <div class="choices" id="vehicleChoices"></div>
 
     <div class="section-label" style="margin-top:24px">
       2. Choisir le mode de paiement
     </div>
 
-    <div class="payment-choices" id="paymentChoices">
-
-      <button type="button" class="choice"
-        data-value="cash" aria-pressed="false">
-        <span class="choice-icon">💵</span>
-        <span class="choice-name">Cash</span>
-      </button>
-
-      <button type="button" class="choice"
-        data-value="tmoney" aria-pressed="false">
-        <span class="choice-icon">📱</span>
-        <span class="choice-name">TMoney</span>
-      </button>
-
-      <button type="button" class="choice"
-        data-value="flooz" aria-pressed="false">
-        <span class="choice-icon">📲</span>
-        <span class="choice-name">Flooz</span>
-      </button>
-
-    </div>
+    <div class="payment-choices" id="paymentChoices"></div>
 
     <div class="price-box">
       <span>Montant à encaisser</span>
       <strong id="price">0 FCFA</strong>
     </div>
 
-    <button class="register" id="registerButton" type="button">
-      Enregistrer le lavage
+    <button class="register" id="registerButton" type="button" disabled>
+      Chargement des paramètres...
     </button>
 
     <div id="message" class="message" role="status" aria-live="polite"></div>
@@ -452,12 +381,56 @@
   let selectedPayment = null;
   let selectedPrice = 0;
 
+  let prices = {};
+  let paymentMethods = {};
+  let settingsLoaded = false;
+
   const priceElement = document.getElementById("price");
   const messageElement = document.getElementById("message");
   const registerButton = document.getElementById("registerButton");
 
+  const vehicleConfig = {
+    moto: {
+      name: "Moto",
+      icon: "🏍️"
+    },
+    small_car: {
+      name: "Petite voiture",
+      icon: "🚘"
+    },
+    suv: {
+      name: "SUV / 4x4",
+      icon: "🚙"
+    }
+  };
+
+  const paymentConfig = {
+    cash: {
+      name: "Cash",
+      icon: "💵"
+    },
+    tmoney: {
+      name: "TMoney",
+      icon: "📱"
+    },
+    flooz: {
+      name: "Flooz",
+      icon: "📲"
+    }
+  };
+
   function formatMoney(amount) {
     return Number(amount || 0).toLocaleString("fr-FR") + " FCFA";
+  }
+
+  function showMessage(message, type) {
+    messageElement.textContent = message;
+    messageElement.className = "message " + type;
+  }
+
+  function clearMessage() {
+    messageElement.textContent = "";
+    messageElement.className = "message";
   }
 
   function selectOption(containerId, button, callback) {
@@ -474,27 +447,171 @@
     callback();
   }
 
-  document.querySelectorAll("#vehicleChoices .choice").forEach(button => {
-    button.addEventListener("click", function() {
-      selectOption("vehicleChoices", this, () => {
-        selectedVehicle = this.dataset.value;
-        selectedPrice = Number(this.dataset.price);
-        priceElement.textContent = formatMoney(selectedPrice);
-      });
-    });
-  });
+  function updateDisplayedPrice() {
+    if (!selectedVehicle || !settingsLoaded) {
+      selectedPrice = 0;
+      priceElement.textContent = "0 FCFA";
+      return;
+    }
 
-  document.querySelectorAll("#paymentChoices .choice").forEach(button => {
-    button.addEventListener("click", function() {
-      selectOption("paymentChoices", this, () => {
-        selectedPayment = this.dataset.value;
-      });
-    });
-  });
+    selectedPrice = Number(prices[selectedVehicle]);
 
-  function showMessage(message, type) {
-    messageElement.textContent = message;
-    messageElement.className = "message " + type;
+    priceElement.textContent = formatMoney(selectedPrice);
+  }
+
+  function renderVehicleChoices() {
+    const container = document.getElementById("vehicleChoices");
+    container.innerHTML = "";
+
+    Object.entries(vehicleConfig).forEach(([value, config]) => {
+      const price = Number(prices[value]);
+
+      if (!Number.isFinite(price) || price <= 0) {
+        return;
+      }
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "choice";
+      button.dataset.value = value;
+      button.setAttribute("aria-pressed", "false");
+
+      const icon = document.createElement("span");
+      icon.className = "choice-icon";
+      icon.textContent = config.icon;
+
+      const name = document.createElement("span");
+      name.className = "choice-name";
+      name.textContent = config.name;
+
+      const priceText = document.createElement("span");
+      priceText.className = "choice-price";
+      priceText.textContent = formatMoney(price);
+
+      button.append(icon, name, priceText);
+
+      button.addEventListener("click", function() {
+        selectOption("vehicleChoices", this, () => {
+          selectedVehicle = value;
+          updateDisplayedPrice();
+        });
+      });
+
+      container.appendChild(button);
+    });
+  }
+
+  function renderPaymentChoices() {
+    const container = document.getElementById("paymentChoices");
+    container.innerHTML = "";
+
+    Object.entries(paymentConfig).forEach(([value, config]) => {
+      if (paymentMethods[value] !== true) {
+        return;
+      }
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "choice";
+      button.dataset.value = value;
+      button.setAttribute("aria-pressed", "false");
+
+      const icon = document.createElement("span");
+      icon.className = "choice-icon";
+      icon.textContent = config.icon;
+
+      const name = document.createElement("span");
+      name.className = "choice-name";
+      name.textContent = config.name;
+
+      button.append(icon, name);
+
+      button.addEventListener("click", function() {
+        selectOption("paymentChoices", this, () => {
+          selectedPayment = value;
+        });
+      });
+
+      container.appendChild(button);
+    });
+  }
+
+  async function loadEmployeeSettings() {
+    registerButton.disabled = true;
+    registerButton.textContent = "Chargement des paramètres...";
+
+    try {
+      const response = await fetch(
+        SUPABASE_FUNCTIONS + "employee-settings",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + session.access_token
+          },
+          body: JSON.stringify({})
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.message || "Impossible de charger les paramètres."
+        );
+      }
+
+      const settings = data.settings || {};
+
+      const receivedPrices = settings.prices || {};
+      const receivedPayments = settings.payment_methods || {};
+
+      const validPrices = {};
+
+      Object.keys(vehicleConfig).forEach(type => {
+        const value = Number(receivedPrices[type]);
+
+        if (Number.isFinite(value) && value > 0) {
+          validPrices[type] = value;
+        }
+      });
+
+      if (Object.keys(validPrices).length === 0) {
+        throw new Error("Aucun tarif valide n'est configuré.");
+      }
+
+      prices = validPrices;
+      paymentMethods = receivedPayments;
+
+      const activePayments = Object.keys(paymentConfig).filter(
+        method => paymentMethods[method] === true
+      );
+
+      if (activePayments.length === 0) {
+        throw new Error("Aucun mode de paiement actif.");
+      }
+
+      settingsLoaded = true;
+
+      renderVehicleChoices();
+      renderPaymentChoices();
+
+      registerButton.disabled = false;
+      registerButton.textContent = "Enregistrer le lavage";
+
+      clearMessage();
+
+    } catch (error) {
+      settingsLoaded = false;
+
+      registerButton.disabled = true;
+      registerButton.textContent = "Paramètres indisponibles";
+
+      showMessage(
+        error.message || "Erreur lors du chargement des paramètres.",
+        "error"
+      );
+    }
   }
 
   async function loadHistory() {
@@ -537,15 +654,20 @@
         const transaction = document.createElement("div");
         transaction.className = "transaction";
 
-        const name = document.createElement("div");
-        name.className = "transaction-name";
-
         const vehicleNames = {
           moto: "Moto",
           small_car: "Petite voiture",
           suv: "SUV / 4x4"
         };
 
+        const paymentNames = {
+          cash: "Cash",
+          tmoney: "TMoney",
+          flooz: "Flooz"
+        };
+
+        const name = document.createElement("div");
+        name.className = "transaction-name";
         name.textContent =
           vehicleNames[item.vehicle_type] || item.vehicle_type;
 
@@ -553,12 +675,6 @@
         info.className = "transaction-info";
 
         const date = new Date(item.created_at);
-
-        const paymentNames = {
-          cash: "Cash",
-          tmoney: "TMoney",
-          flooz: "Flooz"
-        };
 
         info.textContent =
           date.toLocaleString("fr-FR", {
@@ -580,24 +696,30 @@
 
     } catch (error) {
       historyElement.innerHTML = "";
+
       const errorText = document.createElement("div");
       errorText.className = "empty";
       errorText.textContent = error.message;
+
       historyElement.appendChild(errorText);
     }
   }
 
   registerButton.addEventListener("click", async function() {
-    messageElement.className = "message";
-    messageElement.textContent = "";
+    clearMessage();
 
-    if (!selectedVehicle) {
+    if (!settingsLoaded) {
+      showMessage("Les paramètres ne sont pas disponibles.", "error");
+      return;
+    }
+
+    if (!selectedVehicle || !prices[selectedVehicle]) {
       showMessage("Veuillez choisir un véhicule.", "error");
       return;
     }
 
-    if (!selectedPayment) {
-      showMessage("Veuillez choisir un mode de paiement.", "error");
+    if (!selectedPayment || paymentMethods[selectedPayment] !== true) {
+      showMessage("Veuillez choisir un mode de paiement actif.", "error");
       return;
     }
 
@@ -655,7 +777,12 @@
     window.location.href = "index.html";
   });
 
-  loadHistory();
+  async function initializeDashboard() {
+    await loadEmployeeSettings();
+    await loadHistory();
+  }
+
+  initializeDashboard();
 </script>
 
 </body>
