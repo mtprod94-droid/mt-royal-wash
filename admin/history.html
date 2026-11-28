@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#edf6fc">
+<title>MT ROYAL WASH | Historique</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 20px 14px 35px;
+    font-family: Arial, sans-serif;
+    color: #18324f;
+    background: #edf6fc;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+h1 {
+    margin: 0;
+    color: #1769aa;
+    font-size: 23px;
+}
+
+.subtitle {
+    margin-top: 6px;
+    color: #7892a8;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+button {
+    border: 0;
+    border-radius: 10px;
+    padding: 12px 15px;
+    color: white;
+    background: #1769aa;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.back { background: #627d92; }
+
+.panel {
+    padding: 16px;
+    margin-bottom: 16px;
+    background: white;
+    border: 1px solid #dceaf4;
+    border-radius: 16px;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.filters input,
+.filters select {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #dceaf4;
+    border-radius: 10px;
+    background: #f6faff;
+    color: #18324f;
+    font-size: 14px;
+}
+
+.search {
+    grid-column: 1 / -1;
+}
+
+.summary {
+    margin: 14px 0;
+    color: #7892a8;
+    font-size: 13px;
+}
+
+.transaction {
+    padding: 15px 0;
+    border-bottom: 1px solid #edf2f6;
+}
+
+.transaction:last-child { border-bottom: 0; }
+
+.transaction-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.transaction-number {
+    color: #1769aa;
+    font-weight: bold;
+}
+
+.amount {
+    color: #1769aa;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.details {
+    margin-top: 9px;
+    color: #627d92;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 20px;
+    background: #e8f5ec;
+    color: #287a43;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.empty, .loading {
+    padding: 25px 8px;
+    text-align: center;
+    color: #7892a8;
+    font-size: 14px;
+}
+
+#error {
+    color: #b44;
+    font-size: 13px;
+    margin-top: 12px;
+}
+
+@media (max-width: 380px) {
+    h1 { font-size: 19px; }
+    .filters { grid-template-columns: 1fr; }
+    .search { grid-column: auto; }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+    <div>
+        <h1>📋 Historique</h1>
+        <div class="subtitle">MT ROYAL WASH</div>
+    </div>
+    <button class="back" id="backButton">Retour</button>
+</header>
+
+<section class="panel">
+    <div class="filters">
+        <input type="date" id="dateFrom" aria-label="Date de début">
+        <input type="date" id="dateTo" aria-label="Date de fin">
+
+        <input
+            class="search"
+            type="search"
+            id="search"
+            placeholder="Rechercher une transaction, un véhicule..."
+        >
+
+        <select id="paymentFilter">
+            <option value="">Tous les paiements</option>
+            <option value="cash">Cash</option>
+            <option value="tmoney">TMoney</option>
+            <option value="flooz">Flooz</option>
+        </select>
+
+        <select id="statusFilter">
+            <option value="">Tous les statuts</option>
+            <option value="paid">Payé</option>
+            <option value="pending">En attente</option>
+            <option value="cancelled">Annulé</option>
+        </select>
+    </div>
+
+    <div class="summary" id="summary">Chargement...</div>
+    <button type="button" id="resetButton">Réinitialiser les filtres</button>
+    <button type="button" id="refreshButton">Actualiser</button>
+    <div id="error" role="status" aria-live="polite"></div>
+</section>
+
+<section class="panel">
+    <div id="historyList">
+        <div class="loading">Chargement de l'historique...</div>
+    </div>
+</section>
+
+</div>
+
+<script>
+const API_URL =
+"https://cgilxwdxiakfriroixih.supabase.co/functions/v1/admin-history";
+
+const savedSession =
+sessionStorage.getItem("mtRoyalWashAdminSession");
+
+let loginData = null;
+let allHistory = [];
+
+try {
+    loginData = JSON.parse(savedSession);
+} catch {
+    loginData = null;
+}
+
+if (
+    !loginData ||
+    !loginData.access_token ||
+    !loginData.user ||
+    loginData.user.role !== "admin"
+) {
+    window.location.replace("index.html");
+}
+
+function formatCFA(amount) {
+    return Number(amount || 0).toLocaleString("fr-FR") + " FCFA";
+}
+
+function formatDate(value) {
+    if (!value) return "Date inconnue";
+
+    return new Date(value).toLocaleString("fr-FR", {
+        dateStyle: "short",
+        timeStyle: "short",
+        timeZone: "Africa/Lome"
+    });
+}
+
+function normalize(value) {
+    return String(value || "").toLowerCase();
+}
+
+function renderHistory() {
+    const list = document.getElementById("historyList");
+    const search = normalize(document.getElementById("search").value);
+    const payment = document.getElementById("paymentFilter").value;
+    const status = document.getElementById("statusFilter").value;
+    const dateFrom = document.getElementById("dateFrom").value;
+    const dateTo = document.getElementById("dateTo").value;
+
+    const filtered = allHistory.filter(item => {
+        const vehicle = item.vehicles || {};
+        const employee = item.employee || {};
+
+        const searchable = [
+            item.transaction_number,
+            vehicle.vehicle_type,
+            item.payment_method,
+            item.status,
+            employee.full_name,
+            employee.username
+        ].map(normalize).join(" ");
+
+        const date = item.created_at
+            ? new Date(item.created_at).toLocaleDateString("en-CA", {
+                timeZone: "Africa/Lome"
+            })
+            : "";
+
+        return (
+            (!search || searchable.includes(search)) &&
+            (!payment || normalize(item.payment_method) === payment) &&
+            (!status || normalize(item.status) === status) &&
+            (!dateFrom || date >= dateFrom) &&
+            (!dateTo || date <= dateTo)
+        );
+    });
+
+    document.getElementById("summary").textContent =
+        filtered.length + " transaction(s) affichée(s) sur " +
+        allHistory.length;
+
+    list.replaceChildren();
+
+    if (filtered.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "Aucune transaction trouvée.";
+        list.appendChild(empty);
+        return;
+    }
+
+    filtered.forEach(item => {
+        const vehicle = item.vehicles || {};
+        const employee = item.employee || {};
+
+        const row = document.createElement("article");
+        row.className = "transaction";
+
+        const top = document.createElement("div");
+        top.className = "transaction-top";
+
+        const number = document.createElement("div");
+        number.className = "transaction-number";
+        number.textContent =
+            "Transaction #" + (item.transaction_number ?? "—");
+
+        const amount = document.createElement("div");
+        amount.className = "amount";
+        amount.textContent = formatCFA(item.amount);
+
+        top.append(number, amount);
+
+        const details = document.createElement("div");
+        details.className = "details";
+
+        const vehicleLine = document.createElement("div");
+        vehicleLine.textContent =
+            "🚘 Véhicule : " + (vehicle.vehicle_type || "Non renseigné");
+
+        const paymentLine = document.createElement("div");
+        paymentLine.textContent =
+            "💳 Paiement : " + (item.payment_method || "Non renseigné");
+
+        const employeeLine = document.createElement("div");
+        employeeLine.textContent =
+            "👤 Employé : " +
+            (employee.full_name || employee.username || "Non renseigné");
+
+        const dateLine = document.createElement("div");
+        dateLine.textContent = "🕒 " + formatDate(item.created_at);
+
+        const statusLine = document.createElement("div");
+        const badge = document.createElement("span");
+        badge.className = "status";
+        badge.textContent = item.status || "Statut inconnu";
+        statusLine.appendChild(badge);
+
+        details.append(
+            vehicleLine,
+            paymentLine,
+            employeeLine,
+            dateLine,
+            statusLine
+        );
+
+        row.append(top, details);
+        list.appendChild(row);
+    });
+}
+
+async function loadHistory() {
+    const list = document.getElementById("historyList");
+    const error = document.getElementById("error");
+
+    error.textContent = "";
+    list.innerHTML = '<div class="loading">Chargement...</div>';
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + loginData.access_token
+            },
+            body: JSON.stringify({})
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            if (response.status === 401 || response.status === 403) {
+                sessionStorage.removeItem("mtRoyalWashAdminSession");
+                window.location.replace("index.html");
+                return;
+            }
+
+            throw new Error(data.message || "Chargement impossible.");
+        }
+
+        allHistory = Array.isArray(data.history) ? data.history : [];
+        renderHistory();
+
+    } catch (err) {
+        list.innerHTML =
+            '<div class="empty">Impossible de charger l’historique.</div>';
+
+        error.textContent =
+            err.message || "Erreur de connexion.";
+    }
+}
+
+document.getElementById("backButton").addEventListener("click", () => {
+    window.location.href = "dashboard.html";
+});
+
+document.getElementById("refreshButton").addEventListener(
+    "click",
+    loadHistory
+);
+
+document.getElementById("resetButton").addEventListener("click", () => {
+    document.getElementById("dateFrom").value = "";
+    document.getElementById("dateTo").value = "";
+    document.getElementById("search").value = "";
+    document.getElementById("paymentFilter").value = "";
+    document.getElementById("statusFilter").value = "";
+    renderHistory();
+});
+
+[
+    "dateFrom",
+    "dateTo",
+    "search",
+    "paymentFilter",
+    "statusFilter"
+].forEach(id => {
+    document.getElementById(id).addEventListener("input", renderHistory);
+    document.getElementById(id).addEventListener("change", renderHistory);
+});
+
+if (loginData && loginData.access_token) {
+    loadHistory();
+}
+</script>
+</body>
+</html>
