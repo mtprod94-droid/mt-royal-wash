@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paramètres – MT ROYAL WASH</title>
+
+<style>
+:root {
+  --blue:#123b68;
+  --gold:#d6ad55;
+  --bg:#f3f6fa;
+  --text:#172b43;
+  --muted:#718096;
+  --white:#fff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+header{
+  background:linear-gradient(120deg,#0b2545,#174d7d);
+  color:white;
+  padding:24px 18px;
+}
+.header-inner,.container{
+  max-width:850px;
+  margin:auto;
+}
+header h1{margin:0 0 7px;font-size:24px}
+header p{margin:0;color:#d8e5f2;font-size:14px}
+.back{
+  display:inline-block;
+  margin-top:16px;
+  padding:10px 15px;
+  border:1px solid #ffffff66;
+  border-radius:8px;
+  color:white;
+  text-decoration:none;
+  font-size:14px;
+}
+.container{padding:22px 16px 40px}
+.panel{
+  background:white;
+  border-radius:13px;
+  padding:20px;
+  margin-bottom:17px;
+  box-shadow:0 3px 12px #142b4510;
+}
+.panel h2{font-size:18px;margin:0 0 18px}
+.field{margin-bottom:15px}
+.field label{
+  display:block;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:7px;
+}
+.field input{
+  width:100%;
+  padding:13px;
+  border:1px solid #d8e0e9;
+  border-radius:8px;
+  font-size:15px;
+  outline:none;
+}
+.field input:focus{
+  border-color:var(--blue);
+}
+.price-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  padding:13px 0;
+  border-bottom:1px solid #edf0f4;
+}
+.price-row:last-child{border:0}
+.price-row label{font-weight:bold;font-size:14px}
+.price-row input{
+  width:125px;
+  padding:11px;
+  border:1px solid #d8e0e9;
+  border-radius:8px;
+  font-size:15px;
+  text-align:right;
+}
+.payment-option{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 0;
+  border-bottom:1px solid #edf0f4;
+}
+.payment-option:last-child{border:0}
+.payment-option label{font-weight:bold}
+.payment-option input{
+  width:21px;
+  height:21px;
+  accent-color:var(--blue);
+}
+.save-button{
+  width:100%;
+  padding:15px;
+  border:0;
+  border-radius:9px;
+  background:var(--blue);
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.save-button:disabled{
+  opacity:.6;
+  cursor:wait;
+}
+#status{
+  display:none;
+  padding:13px;
+  margin-bottom:15px;
+  border-radius:8px;
+  font-size:14px;
+}
+#status.success{
+  display:block;
+  background:#e5f7ec;
+  color:#176b38;
+}
+#status.error{
+  display:block;
+  background:#fdeaea;
+  color:#a32626;
+}
+.note{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:12px;
+  line-height:1.5;
+}
+@media(min-width:650px){
+  .form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0 16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1>⚙️ Paramètres</h1>
+    <p>MT ROYAL WASH – Configuration de l'entreprise</p>
+    <a class="back" href="dashboard.html">← Retour au tableau de bord</a>
+  </div>
+</header>
+
+<main class="container">
+
+  <div id="status" role="status" aria-live="polite"></div>
+
+  <section class="panel">
+    <h2>🏢 Informations de l'entreprise</h2>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="companyName">Nom de l'entreprise</label>
+        <input id="companyName" type="text" value="MT ROYAL WASH">
+      </div>
+
+      <div class="field">
+        <label for="phone">Téléphone</label>
+        <input id="phone" type="tel" placeholder="Numéro de téléphone">
+      </div>
+
+      <div class="field">
+        <label for="whatsapp">WhatsApp</label>
+        <input id="whatsapp" type="tel" placeholder="Numéro WhatsApp">
+      </div>
+
+      <div class="field">
+        <label for="address">Adresse / Localisation</label>
+        <input id="address" type="text" placeholder="Adresse de l'entreprise">
+      </div>
+
+      <div class="field">
+        <label for="openingHours">Horaires d'ouverture</label>
+        <input id="openingHours" type="text" placeholder="Ex. 08h00 – 19h00">
+      </div>
+
+      <div class="field">
+        <label for="logoUrl">Lien du logo</label>
+        <input id="logoUrl" type="url" placeholder="https://...">
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>🚗 Tarifs de lavage</h2>
+
+    <div class="price-row">
+      <label for="priceMoto">Moto (FCFA)</label>
+      <input id="priceMoto" type="number" min="0" step="1" value="500">
+    </div>
+
+    <div class="price-row">
+      <label for="priceSmallCar">Small Car (FCFA)</label>
+      <input id="priceSmallCar" type="number" min="0" step="1" value="2000">
+    </div>
+
+    <div class="price-row">
+      <label for="priceSuv">SUV (FCFA)</label>
+      <input id="priceSuv" type="number" min="0" step="1" value="2500">
+    </div>
+
+    <p class="note">
+      Ces tarifs sont enregistrés dans les paramètres.
+      Ils ne modifient pas automatiquement les tarifs utilisés
+      par les autres pages de l'application.
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>💳 Moyens de paiement</h2>
+
+    <div class="payment-option">
+      <label for="cash">Espèces (Cash)</label>
+      <input id="cash" type="checkbox" checked>
+    </div>
+
+    <div class="payment-option">
+      <label for="tmoney">TMoney</label>
+      <input id="tmoney" type="checkbox" checked>
+    </div>
+
+    <div class="payment-option">
+      <label for="flooz">Flooz</label>
+      <input id="flooz" type="checkbox" checked>
+    </div>
+  </section>
+
+  <button class="save-button" id="saveButton" type="button">
+    💾 Enregistrer les paramètres
+  </button>
+
+</main>
+
+<script>
+(function(){
+
+  const SESSION_KEY = "mtRoyalWashAdminSession";
+
+  const FUNCTION_URL =
+    "https://cgilxwdxiakfriroixih.supabase.co/functions/v1/admin-settings";
+
+  const statusBox = document.getElementById("status");
+  const saveButton = document.getElementById("saveButton");
+
+  let loginData = null;
+
+  try {
+    loginData = JSON.parse(
+      sessionStorage.getItem(SESSION_KEY)
+    );
+  } catch(error) {
+    loginData = null;
+  }
+
+  if(
+    !loginData ||
+    !loginData.access_token ||
+    !loginData.user ||
+    loginData.user.role !== "admin"
+  ){
+    window.location.replace("index.html");
+    return;
+  }
+
+  function showStatus(message,type){
+    statusBox.textContent = message;
+    statusBox.className = type;
+  }
+
+  function getNumber(id){
+    const value = document.getElementById(id).value.trim();
+
+    if(value === "" || !Number.isSafeInteger(Number(value)) || Number(value) < 0){
+      throw new Error("Veuillez vérifier les montants des tarifs.");
+    }
+
+    return Number(value);
+  }
+
+  async function callFunction(payload){
+
+    const response = await fetch(FUNCTION_URL,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer " + loginData.access_token
+      },
+      body:JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if(!response.ok || data.success !== true){
+      throw new Error(
+        data.message || "Une erreur est survenue."
+      );
+    }
+
+    return data;
+  }
+
+  function displaySettings(settings){
+
+    const company = settings.company || {};
+    const prices = settings.prices || {};
+    const methods = settings.payment_methods || {};
+
+    document.getElementById("companyName").value =
+      company.name ?? "MT ROYAL WASH";
+
+    document.getElementById("phone").value =
+      company.phone ?? "";
+
+    document.getElementById("whatsapp").value =
+      company.whatsapp ?? "";
+
+    document.getElementById("address").value =
+      company.address ?? "";
+
+    document.getElementById("openingHours").value =
+      company.opening_hours ?? "";
+
+    document.getElementById("logoUrl").value =
+      company.logo_url ?? "";
+
+    document.getElementById("priceMoto").value =
+      prices.moto ?? 500;
+
+    document.getElementById("priceSmallCar").value =
+      prices.small_car ?? 2000;
+
+    document.getElementById("priceSuv").value =
+      prices.suv ?? 2500;
+
+    document.getElementById("cash").checked =
+      methods.cash !== false;
+
+    document.getElementById("tmoney").checked =
+      methods.tmoney !== false;
+
+    document.getElementById("flooz").checked =
+      methods.flooz !== false;
+  }
+
+  async function loadSettings(){
+
+    try{
+
+      const result = await callFunction({
+        action:"get"
+      });
+
+      displaySettings(result.settings || {});
+
+    }catch(error){
+
+      showStatus(
+        "Chargement impossible : " + error.message,
+        "error"
+      );
+    }
+  }
+
+  async function saveSettings(){
+
+    saveButton.disabled = true;
+    saveButton.textContent = "Enregistrement...";
+
+    try{
+
+      const settings = {
+
+        company:{
+          name:document.getElementById("companyName").value.trim(),
+          phone:document.getElementById("phone").value.trim(),
+          whatsapp:document.getElementById("whatsapp").value.trim(),
+          address:document.getElementById("address").value.trim(),
+          opening_hours:document.getElementById("openingHours").value.trim(),
+          logo_url:document.getElementById("logoUrl").value.trim()
+        },
+
+        prices:{
+          moto:getNumber("priceMoto"),
+          small_car:getNumber("priceSmallCar"),
+          suv:getNumber("priceSuv")
+        },
+
+        payment_methods:{
+          cash:document.getElementById("cash").checked,
+          tmoney:document.getElementById("tmoney").checked,
+          flooz:document.getElementById("flooz").checked
+        }
+
+      };
+
+      if(!settings.company.name){
+        throw new Error("Le nom de l'entreprise est obligatoire.");
+      }
+
+      if(!Object.values(settings.payment_methods).some(Boolean)){
+        throw new Error("Activez au moins un moyen de paiement.");
+      }
+
+      await callFunction({
+        action:"save",
+        settings:settings
+      });
+
+      showStatus(
+        "✅ Paramètres enregistrés avec succès.",
+        "success"
+      );
+
+    }catch(error){
+
+      showStatus(
+        "❌ " + error.message,
+        "error"
+      );
+
+    }finally{
+
+      saveButton.disabled = false;
+      saveButton.textContent = "💾 Enregistrer les paramètres";
+    }
+  }
+
+  saveButton.addEventListener("click",saveSettings);
+
+  loadSettings();
+
+})();
+</script>
+
+</body>
+</html>
